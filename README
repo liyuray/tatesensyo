@@ -1,0 +1,19 @@
+tatesensyo is to provide vertical typsetting of the http://1000ebooks.tw books.
+
+Objectives:
+1. Typsetting vertical PDF file with platex.
+2. Use Amazon EC2 to provide service.
+3. Use bookmarklet for user to access.
+
+
+Related technologies:
+1. Perl: HTML::BuildTree, XML::Simple, CGI.
+2. pLaTeX: OTF Package.
+3. Chiense Font: WenQuanYi.
+4. Amazon EC2.
+5. Bookmarklet.
+
+
+Credits:
+1. Aozora for kindle:
+2. OTF Package:
