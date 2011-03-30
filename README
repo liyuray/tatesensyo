@@ -18,3 +18,11 @@ Related technologies:
 Credits:
 1. Aozora for kindle:
 2. OTF Package:
+
+
+Installed:
+* ptex-bin
+* dvipdfmx
+* cmap-adobe-japan1
+* otf-ipafont
+* gs-cjk-resource

@@ -1,0 +1,1 @@
+javascript:if(/1000ebooks.tw/.test(location.hostname)){var i,f;for(i=0;f=document.links[i];i++){if(/download/.test(f.href)){location.href='http://ec2-122-248-208-58.ap-southeast-1.compute.amazonaws.com/cgi-bin/download.cgi?epub='+f.href;break;}}}
