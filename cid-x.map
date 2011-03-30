@@ -1,0 +1,129 @@
+%rml            H                   ipam.ttf
+%rmlv           V                   ipam.ttf
+
+rml            H                   sazanami-mincho.ttf
+rmlv           V                   sazanami-mincho.ttf
+
+%gbm            H                   ipag.ttf
+%gbmv           V                   ipag.ttf
+
+%gbm            H                   VL-Gothic-Regular.ttf
+%gbmv           V                   VL-Gothic-Regular.ttf
+
+gbm            H                   sazanami-gothic.ttf
+gbmv           V                   sazanami-gothic.ttf
+
+%%% OTF package
+hminr-h        H                   ipam.ttf
+hminr-v        V                   ipam.ttf
+otf-ujmr-h     UniJIS-UTF16-H      ipam.ttf
+otf-ujmr-v     UniJIS-UTF16-V      ipam.ttf
+otf-cjmr-h     Adobe-Japan1-6      ipam.ttf
+otf-cjmr-v     Identity-V          ipam.ttf/AJ16
+
+hgothr-h       H                   ipag.ttf
+hgothr-v       V                   ipag.ttf
+otf-ujgr-h     UniJIS-UTF16-H      ipag.ttf
+otf-ujgr-v     UniJIS-UTF16-V      ipag.ttf
+otf-cjgr-h     Adobe-Japan1-6      ipag.ttf
+otf-cjgr-v     Identity-V          ipag.ttf/AJ16
+
+otf-ujmb-h    UniJIS-UTF16-H ipag.ttf
+otf-ujmb-v    UniJIS-UTF16-V ipag.ttf
+otf-cjmb-h    Identity-H     ipag.ttf
+otf-cjmb-v    Identity-V     ipag.ttf
+hminb-h        H                   ipag.ttf
+hminb-v        V                   ipag.ttf
+
+%hgothr-h       H                   VL-Gothic-Regular.ttf
+%hgothr-v       V                   VL-Gothic-Regular.ttf
+%otf-ujgr-h     UniJIS-UTF16-H      VL-Gothic-Regular.ttf
+%otf-ujgr-v     UniJIS-UTF16-V      VL-Gothic-Regular.ttf
+%otf-cjgr-h     Adobe-Japan1-6      VL-Gothic-Regular.ttf
+%otf-cjgr-v     Identity-V          VL-Gothic-Regular.ttf/AJ16
+
+%hgothr-h       H                   sazanami-gothic.ttf
+%hgothr-v       V                   sazanami-gothic.ttf
+%otf-ujgr-h     UniJIS-UTF16-H      sazanami-gothic.ttf
+%otf-ujgr-v     UniJIS-UTF16-V      sazanami-gothic.ttf
+%otf-cjgr-h     Adobe-Japan1-6      sazanami-gothic.ttf
+%otf-cjgr-v     Identity-V          sazanami-gothic.ttf/AJ16
+
+hmgothr-h      H                   wlmaru20044.ttf
+hmgothr-v      V                   wlmaru20044.ttf
+otf-ujmgr-h    UniJIS-UTF16-H      wlmaru20044.ttf
+otf-ujmgr-v    UniJIS-UTF16-V      wlmaru20044.ttf
+otf-cjmgr-h    Adobe-Japan1-6      wlmaru20044.ttf
+otf-cjmgr-v    Identity-V          wlmaru20044.ttf/AJ16
+
+otf-ucmr-h     UniGB-UTF16-H       gbsn00lp.ttf
+otf-ucmr-v     UniGB-UTF16-V       gbsn00lp.ttf
+otf-ccmr-h     Adobe-GB1-5         gbsn00lp.ttf
+otf-ccmr-v     Identity-V          gbsn00lp.ttf/AG15
+
+otf-ucgr-h     UniGB-UTF16-H       wqy-zenhei.ttf
+otf-ucgr-v     UniGB-UTF16-V       wqy-zenhei.ttf
+otf-ccgr-h     Adobe-GB1-5         wqy-zenhei.ttf
+otf-ccgr-v     Identity-V          wqy-zenhei.ttf/AG15
+
+otf-utmr-h     UniCNS-UTF16-H      uming.ttf
+otf-utmr-v     UniCNS-UTF16-V      uming.ttf
+otf-ctmr-h     Adobe-CNS1-5        uming.ttf
+otf-ctmr-v     Identity-V          uming.ttf/AC15
+
+%otf-utmr-h     UniCNS-UTF16-H      bsmi00lp.ttf
+%otf-utmr-v     UniCNS-UTF16-V      bsmi00lp.ttf
+%otf-ctmr-h     Adobe-CNS1-5        bsmi00lp.ttf
+%otf-ctmr-v     Identity-V          bsmi00lp.ttf/AC15
+
+otf-utgr-h     UniCNS-UTF16-H      cwheib.ttf
+otf-utgr-v     UniCNS-UTF16-V      cwheib.ttf
+otf-ctgr-h     Adobe-CNS1-5        cwheib.ttf
+otf-ctgr-v     Identity-V          cwheib.ttf/AC15
+
+otf-ukmr-h     UniKS-UTF16-H       UnBatang.ttf
+otf-ukmr-v     UniKS-UTF16-V       UnBatang.ttf
+otf-ckmr-h     Adobe-Korea1-2      UnBatang.ttf
+otf-ckmr-v     Identity-V          UnBatang.ttf/AK12
+
+otf-ukgr-h     UniKS-UTF16-H       UnDotum.ttf
+otf-ukgr-v     UniKS-UTF16-V       UnDotum.ttf
+otf-ckgr-h     Adobe-Korea1-2      UnDotum.ttf
+otf-ckgr-v     Identity-V          UnDotum.ttf/AK12
+
+%%% UTF package
+%hmr            H                   ipam.ttf
+%hmrv           V                   ipam.ttf
+%unijmin-h      UniJIS-UTF16-H      ipam.ttf
+%unijmin-v      UniJIS-UTF16-V      ipam.ttf
+%cidmin-h       Adobe-Japan1-6      ipam.ttf
+%cidmin-v       Identity-V          ipam.ttf/AJ16
+
+hmr            H                   sazanami-mincho.ttf
+hmrv           V                   sazanami-mincho.ttf
+unijmin-h      UniJIS-UTF16-H      sazanami-mincho.ttf
+unijmin-v      UniJIS-UTF16-V      sazanami-mincho.ttf
+cidmin-h       Adobe-Japan1-6      sazanami-mincho.ttf
+cidmin-v       Identity-V          sazanami-mincho.ttf/AJ16
+
+%hkb            H                   ipag.ttf
+%hkbv           V                   ipag.ttf
+%unijgoth-h     UniJIS-UTF16-H      ipag.ttf
+%unijgoth-v     UniJIS-UTF16-V      ipag.ttf
+%cidgoth-h      Adobe-Japan1-6      ipag.ttf
+%cidgoth-v      Identity-V          ipag.ttf/AJ16
+
+%hkb            H                   VL-Gothic-Regular.ttf
+%hkbv           V                   VL-Gothic-Regular.ttf
+%unijgoth-h     UniJIS-UTF16-H      VL-Gothic-Regular.ttf
+%unijgoth-v     UniJIS-UTF16-V      VL-Gothic-Regular.ttf
+%cidgoth-h      Adobe-Japan1-6      VL-Gothic-Regular.ttf
+%cidgoth-v      Identity-V          VL-Gothic-Regular.ttf/AJ16
+
+hkb            H                   sazanami-gothic.ttf
+hkbv           V                   sazanami-gothic.ttf
+unijgoth-h     UniJIS-UTF16-H      sazanami-gothic.ttf
+unijgoth-v     UniJIS-UTF16-V      sazanami-gothic.ttf
+cidgoth-h      Adobe-Japan1-6      sazanami-gothic.ttf
+cidgoth-v      Identity-V          sazanami-gothic.ttf/AJ16
+
