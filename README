@@ -1,10 +1,11 @@
 tatesensyo is to provide vertical typsetting of the http://1000ebooks.tw books.
 
+
 Objectives:
 1. Typsetting vertical PDF file with platex.
 2. Use Amazon EC2 to provide service.
 3. Use bookmarklet for user to access.
-
+4. url is http://ec2-122-248-208-58.ap-southeast-1.compute.amazonaws.com/cgi-bin/download.cgi?epub=sensyo.epub
 
 Related technologies:
 1. Perl: HTML::BuildTree, XML::Simple, CGI.
