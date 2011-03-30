@@ -131,6 +131,7 @@ run3 \@cmd, undef, \$out, \$err;
 #print "err: $err";
 
 #$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/home/ubuntu/.fonts:/home/ubuntu/.texmf-var/fonts//:";
+$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap//";
 @cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","/home/ubuntu/cid-x.map", "-o", "$tempdir/a.pdf", "$tempdir/a.dvi");
 run3 \@cmd, undef, \$out, \$err;
 #print "in: $in";
