@@ -28,13 +28,6 @@ otf-ujgr-v     UniJIS-UTF16-V      ipag.ttf
 otf-cjgr-h     Adobe-Japan1-6      ipag.ttf
 otf-cjgr-v     Identity-V          ipag.ttf/AJ16
 
-otf-ujmb-h    UniJIS-UTF16-H ipag.ttf
-otf-ujmb-v    UniJIS-UTF16-V ipag.ttf
-otf-cjmb-h    Identity-H     ipag.ttf
-otf-cjmb-v    Identity-V     ipag.ttf
-hminb-h        H                   ipag.ttf
-hminb-v        V                   ipag.ttf
-
 %hgothr-h       H                   VL-Gothic-Regular.ttf
 %hgothr-v       V                   VL-Gothic-Regular.ttf
 %otf-ujgr-h     UniJIS-UTF16-H      VL-Gothic-Regular.ttf
@@ -61,25 +54,20 @@ otf-ucmr-v     UniGB-UTF16-V       gbsn00lp.ttf
 otf-ccmr-h     Adobe-GB1-5         gbsn00lp.ttf
 otf-ccmr-v     Identity-V          gbsn00lp.ttf/AG15
 
-otf-ucgr-h     UniGB-UTF16-H       wqy-zenhei.ttf
-otf-ucgr-v     UniGB-UTF16-V       wqy-zenhei.ttf
-otf-ccgr-h     Adobe-GB1-5         wqy-zenhei.ttf
-otf-ccgr-v     Identity-V          wqy-zenhei.ttf/AG15
+otf-ucgr-h     UniGB-UTF16-H       uming.ttc
+otf-ucgr-v     UniGB-UTF16-V       uming.ttc
+otf-ccgr-h     Adobe-GB1-5         uming.ttc
+otf-ccgr-v     Identity-V          uming.ttc/AG15
 
-otf-utmr-h     UniCNS-UTF16-H      uming.ttf
-otf-utmr-v     UniCNS-UTF16-V      uming.ttf
-otf-ctmr-h     Adobe-CNS1-5        uming.ttf
-otf-ctmr-v     Identity-V          uming.ttf/AC15
+otf-utmr-h     UniCNS-UTF16-H      uming.ttc
+otf-utmr-v     UniCNS-UTF16-V      uming.ttc
+otf-ctmr-h     Adobe-CNS1-5        uming.ttc
+otf-ctmr-v     Identity-V          uming.ttc/AC15
 
-%otf-utmr-h     UniCNS-UTF16-H      bsmi00lp.ttf
-%otf-utmr-v     UniCNS-UTF16-V      bsmi00lp.ttf
-%otf-ctmr-h     Adobe-CNS1-5        bsmi00lp.ttf
-%otf-ctmr-v     Identity-V          bsmi00lp.ttf/AC15
-
-otf-utgr-h     UniCNS-UTF16-H      cwheib.ttf
-otf-utgr-v     UniCNS-UTF16-V      cwheib.ttf
-otf-ctgr-h     Adobe-CNS1-5        cwheib.ttf
-otf-ctgr-v     Identity-V          cwheib.ttf/AC15
+otf-utgr-h     UniCNS-UTF16-H      ukai.ttc
+otf-utgr-v     UniCNS-UTF16-V      ukai.ttc
+otf-ctgr-h     Adobe-CNS1-5        ukai.ttc
+otf-ctgr-v     Identity-V          ukai.ttc/AC15
 
 otf-ukmr-h     UniKS-UTF16-H       UnBatang.ttf
 otf-ukmr-v     UniKS-UTF16-V       UnBatang.ttf
@@ -127,3 +115,6 @@ unijgoth-v     UniJIS-UTF16-V      sazanami-gothic.ttf
 cidgoth-h      Adobe-Japan1-6      sazanami-gothic.ttf
 cidgoth-v      Identity-V          sazanami-gothic.ttf/AJ16
 
+hminb-h        H                   ipag.ttf
+hminb-v        V                   ipag.ttf
+otf-cjmb-v     V                   ipag.ttf

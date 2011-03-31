@@ -53,31 +53,25 @@ my $tex = << 'TEX';
 TEX
 
 my $text_encoding = "euc-jp";
-my $plain_encoding = "sjis";
+my $plain_encoding = "ascii";
 #umask 0666;
 #umask 0750;
 
 my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=4";
-my $zip_url = param('zip');
-#print $epub_url;
-#print $zip_url;
+my $devel = param('devel');
 
 my $tempdir = tempdir( CLEANUP => 1 );
 #my $tempdir = tempdir( CLEANUP => 0 );
+mkdir "$tempdir/log";
 
 my @cmd = ("wget", "-O$tempdir/a.epub", $epub_url);
 #my @cmd = ("wget", "--trust-server-names", "-P$tempdir", $epub_url);
 my ($in,$out,$err);
 #$ENV{http_proxy} = "http://10.113.2.156:3128";
-run3 \@cmd, undef, \$out, \$err;
-#print "out: $out";
-#print "err: $err";
+runcmd(\@cmd, 'wget');
 
 @cmd = ("7za", "x", "-o$tempdir/content", "$tempdir/a.epub");
-run3 \@cmd, undef, \$out, \$err;
-#print "in: $in";
-#print "out: $out";
-#print "err: $err";
+runcmd(\@cmd, '7zax');
 
 my $ref = XMLin("$tempdir/content/OEBPS/toc.ncx");
 my $navpoint = $ref->{navMap}{navPoint};
@@ -116,38 +110,43 @@ print $fho $tex;
 close $fho;
 
 #chdir $tempdir;
-@cmd = ("cp", "/home/ubuntu/sensyo.sty", $tempdir);
-run3 \@cmd, undef, \$out, \$err;
-#print "in: $in";x
-#print "out: $out";
-#print "err: $err";
+@cmd = ("cp", "./tatesensyo/sensyo.sty", $tempdir);
+runcmd(\@cmd, 'cp');
 
 $ENV{TEXINPUTS} = ".:/home/ubuntu/.texmf-var/tex/otf:";
 $ENV{TEXFONTS} =  ".:/home/ubuntu/.texmf-var/fonts//:";
 @cmd = ("platex", "-output-directory", $tempdir, "$tempdir/a.tex");
-run3 \@cmd, undef, \$out, \$err;
-#print "in: $in";
-#print "out: $out";
-#print "err: $err";
+runcmd(\@cmd, 'platex');
 
-#$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/home/ubuntu/.fonts:/home/ubuntu/.texmf-var/fonts//:";
-$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap//";
-@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","/home/ubuntu/cid-x.map", "-o", "$tempdir/a.pdf", "$tempdir/a.dvi");
-run3 \@cmd, undef, \$out, \$err;
-#print "in: $in";
-#print "out: $out";
-my $pdf_file="$tempdir/a.pdf";
-print("err: $err"),exit 1 unless -r $pdf_file;
-#print("err: $err"),exit 1;
+$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/home/ubuntu/.fonts:/home/ubuntu/.texmf-var/fonts//:";
+$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
+@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/a.pdf", "$tempdir/a.dvi");
+runcmd(\@cmd, 'dvipdfmx');
+
+my $outfile;
+if ($devel) {
+    @cmd = ("7za", "a", "$tempdir/log.7z", "$tempdir/log");
+    run3 \@cmd, undef, "/dev/null", "/dev/null";
+    $outfile = "$tempdir/log.7z";
+} else {
+    $outfile = "$tempdir/a.pdf";
+}
+
+die "no $outfile!$/" unless -r $outfile;
 
 my $fh;
-open $fh, "<:raw", $pdf_file or die $!;
-my $pdf_content = do { local $/; <$fh> };
+open $fh, "<:raw", $outfile or die $!;
+my $file_content = do { local $/; <$fh> };
 print "Content-Type:application/x-download\n";   
-print "Content-Disposition:attachment;filename=$pdf_file\n\n";  
+print "Content-Disposition:attachment;filename=$outfile\n\n";  
 binmode STDOUT, ':raw';
-print $pdf_content;
+print $file_content;
 
+sub runcmd {
+    my $cmdh = shift;
+    my $task = shift;
+    run3 $cmdh, undef, "$tempdir/log/$task"."out.txt", "$tempdir/log/$task"."err.txt";
+}
 
 sub output {
     my $plain_text = shift;
@@ -157,7 +156,7 @@ sub output {
                                           $plain_encoding,
                                           $plain_text,
                                           #			Encode::FB_PERLQQ
-                                          sub { sprintf "\\UTF{%X}",$_[0]	}
+                                          sub { sprintf "\\UTFT{%X}",$_[0]	}
                                       )
                                   ));
 }
