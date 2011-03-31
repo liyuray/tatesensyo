@@ -124,12 +124,12 @@ $ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
 runcmd(\@cmd, 'dvipdfmx');
 
 my $outfile;
-if ($devel) {
+if (-r "$tempdir/a.pdf" and !$devel) {
+    $outfile = "$tempdir/a.pdf";
+} else {
     @cmd = ("7za", "a", "$tempdir/log.7z", "$tempdir/log");
     run3 \@cmd, undef, "/dev/null", "/dev/null";
     $outfile = "$tempdir/log.7z";
-} else {
-    $outfile = "$tempdir/a.pdf";
 }
 
 die "no $outfile!$/" unless -r $outfile;
