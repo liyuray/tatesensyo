@@ -44,7 +44,9 @@ runcmd(\@cmd, '7zax');
 my $ref = XMLin("$tempdir/content/OEBPS/content.opf");
 my $title = $ref->{metadata}{'dc:title'};
 my $author = $ref->{metadata}{'dc:creator'}{content};
-my @content_files = map { "$tempdir/content/OEBPS/Text/".$_->{idref} } @{$ref->{spine}{itemref}};
+my %filehash;
+$filehash{$_->{id}} = $_->{href} for @{$ref->{manifest}};
+my @content_files = map { "$tempdir/content/OEBPS/".$filehash{$_->{idref}} } @{$ref->{spine}{itemref}};
 
 my $outbuf = "";
 for my $file (@content_files) {
