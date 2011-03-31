@@ -113,12 +113,12 @@ close $fho;
 @cmd = ("cp", "./tatesensyo/sensyo.sty", $tempdir);
 runcmd(\@cmd, 'cp');
 
-$ENV{TEXINPUTS} = ".:/home/ubuntu/.texmf-var/tex/otf:";
-$ENV{TEXFONTS} =  ".:/home/ubuntu/.texmf-var/fonts//:";
+$ENV{TEXINPUTS} = ".:./tatesensyo/texmf/tex/otf:";
+$ENV{TEXFONTS} =  ".:./tatesensyo/texmf/fonts//:";
 @cmd = ("platex", "-output-directory", $tempdir, "$tempdir/a.tex");
 runcmd(\@cmd, 'platex');
 
-$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:/home/ubuntu/.texmf-var/fonts//:";
+$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:./tatesensyo/texmf/fonts//:";
 $ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
 @cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/a.pdf", "$tempdir/a.dvi");
 runcmd(\@cmd, 'dvipdfmx');
