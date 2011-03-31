@@ -20,38 +20,6 @@ $SIG{__WARN__} = sub { Carp::cluck(@_) };
 #print "Content-type: text/html\n\n";
 #print $dir;
 
-my $tex = << 'TEX';
-\documentclass[a5paper]{tbook}
-%\\documentclass[a5paper, twocolumn]{tbook}
-\usepackage[deluxe,multi]{otf}
-%\\usepackage[expert, deluxe]{otf}
-%##MyAUTHOR##
-%\\usepackage{utf}
-%\\usepackage{furikana}
-%\\usepackage{type1cm}
-%\\def\\rubykatuji{\\rubyfamily\\tiny}
-%\\def\\rubykatuji{\\tiny}%for UTF package
-%\\renewenvironment{teihon}{\\comment}{\\endcomment}
-
-\usepackage[device=kindle2,size=large]{sensyo}
-\title{hlhz}
-\author{xh}
-\date{}
-\begin{document}
-\setlength{\parindent}{2em}
-%\includegraphics[angle=90, width=10cm, height=10cm]{hlhz/OEBPS/Images/Cover.png}
-%\maketitle
-%\tableofcontents
-%\pagestyle{empty}
-%\pagenumbering{gobble}
-%\tchrm
-%\large
-%\bf
-\input{a.txt}
-\end{document}
-
-TEX
-
 my $text_encoding = "euc-jp";
 my $plain_encoding = "ascii";
 #umask 0666;
@@ -74,6 +42,8 @@ runcmd(\@cmd, 'wget');
 runcmd(\@cmd, '7zax');
 
 my $ref = XMLin("$tempdir/content/OEBPS/content.opf");
+my $title = $ref->{metadata}{'dc:title'};
+my $author = $ref->{metadata}{'dc:creator'}{content};
 my @content_files = map { "$tempdir/content/OEBPS/Text/".$_->{idref} } @{$ref->{spine}{itemref}};
 
 my $outbuf = "";
@@ -104,9 +74,10 @@ open $fho, ">:raw", "$tempdir/a.txt" or die "$!";
 print $fho $outbuf;
 close $fho;
 
-open $fho, ">:utf8", "$tempdir/a.tex" or die "$!";
-print $fho $tex;
-close $fho;
+gen_tex(
+    encode('ascii', $title,  sub { sprintf "\\UTFT{%X}", $_[0] }),
+    encode('ascii', $author, sub { sprintf "\\UTFT(%X)", $_[0] }),
+);
 
 #chdir $tempdir;
 @cmd = ("cp", "./tatesensyo/sensyo.sty", $tempdir);
@@ -119,12 +90,12 @@ runcmd(\@cmd, 'platex');
 
 $ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:./tatesensyo/texmf/fonts//:";
 $ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
-@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/a.pdf", "$tempdir/a.dvi");
+@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/$title-$author.pdf", "$tempdir/a.dvi");
 runcmd(\@cmd, 'dvipdfmx');
 
 my $outfile;
-if (-r "$tempdir/a.pdf" and !$devel) {
-    $outfile = "$tempdir/a.pdf";
+if (-r "$tempdir/$title-$author.pdf" and !$devel) {
+    $outfile = "$tempdir/$title-$author.pdf";
 } else {
     @cmd = ("7za", "a", "$tempdir/log.7z", "$tempdir/log");
     run3 \@cmd, undef, "/dev/null", "/dev/null";
@@ -136,6 +107,7 @@ die "no $outfile!$/" unless -r $outfile;
 my $fh;
 open $fh, "<:raw", $outfile or die $!;
 my $file_content = do { local $/; <$fh> };
+binmode STDOUT, ":utf8";
 print "Content-Type:application/x-download\n";   
 print "Content-Disposition:attachment;filename=$outfile\n\n";  
 binmode STDOUT, ':raw';
@@ -160,7 +132,46 @@ sub output {
                                   ));
 }
 
-
+sub gen_tex {
+    my $title = shift;
+    my $author = shift;
+    my $tex = << 'TEX';
+\documentclass[a5paper]{tbook}
+%\\documentclass[a5paper, twocolumn]{tbook}
+\usepackage[deluxe,multi]{otf}
+%\\usepackage[expert, deluxe]{otf}
+%##MyAUTHOR##
+%\\usepackage{utf}
+%\\usepackage{furikana}
+%\\usepackage{type1cm}
+%\\def\\rubykatuji{\\rubyfamily\\tiny}
+%\\def\\rubykatuji{\\tiny}%for UTF package
+%\\renewenvironment{teihon}{\\comment}{\\endcomment}
+\usepackage[device=kindle2,size=large]{sensyo}
+TEX
+    my $tex1 = << "TEX1";
+\\title{$title}
+\\author{$author}
+TEX1
+    my $tex2 = << 'TEX2';
+\date{}
+\begin{document}
+\setlength{\parindent}{2em}
+%\includegraphics[angle=90, width=10cm, height=10cm]{hlhz/OEBPS/Images/Cover.png}
+%\maketitle
+%\tableofcontents
+%\pagestyle{empty}
+%\pagenumbering{gobble}
+%\tchrm
+%\large
+%\bf
+\input{a.txt}
+\end{document}
+TEX2
+    open $fho, ">:utf8", "$tempdir/a.tex" or die "$!";
+    print $fho $tex,$tex1,$tex2;
+    close $fho;
+}
 
 __END__
 
