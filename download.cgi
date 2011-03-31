@@ -79,11 +79,7 @@ gen_tex(
     encode('ascii', $author, sub { sprintf "\\UTFT(%X)", $_[0] }),
 );
 
-#chdir $tempdir;
-@cmd = ("cp", "./tatesensyo/sensyo.sty", $tempdir);
-runcmd(\@cmd, 'cp');
-
-$ENV{TEXINPUTS} = ".:./tatesensyo/texmf/tex/otf:";
+$ENV{TEXINPUTS} = ".:./tatesensyo:./tatesensyo/texmf/tex/otf:";
 $ENV{TEXFONTS} =  ".:./tatesensyo/texmf/fonts//:";
 @cmd = ("platex", "-output-directory", $tempdir, "$tempdir/a.tex");
 runcmd(\@cmd, 'platex');
