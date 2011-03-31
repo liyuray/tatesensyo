@@ -57,7 +57,7 @@ my $plain_encoding = "ascii";
 #umask 0666;
 #umask 0750;
 
-my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=4";
+my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=6";
 my $devel = param('devel');
 
 my $tempdir = tempdir( CLEANUP => 1 );
@@ -73,10 +73,9 @@ runcmd(\@cmd, 'wget');
 @cmd = ("7za", "x", "-o$tempdir/content", "$tempdir/a.epub");
 runcmd(\@cmd, '7zax');
 
-my $ref = XMLin("$tempdir/content/OEBPS/toc.ncx");
-my $navpoint = $ref->{navMap}{navPoint};
-my @order = sort {$navpoint->{$a}{playOrder} <=> $navpoint->{$b}{playOrder}} (keys %{$navpoint});
-my @content_files = map { "$tempdir/content/OEBPS/".$navpoint->{$_}{content}{src} } @order;
+my $ref = XMLin("$tempdir/content/OEBPS/content.opf");
+my @content_files = map { "$tempdir/content/OEBPS/Text/".$_->{idref} } @{$ref->{spine}{itemref}};
+
 my $outbuf = "";
 for my $file (@content_files) {
 #    print $file,$/;
