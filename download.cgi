@@ -42,11 +42,10 @@ runcmd(\@cmd, 'wget');
 runcmd(\@cmd, '7zax');
 
 my $ref = XMLin("$tempdir/content/OEBPS/content.opf");
+
 my $title = $ref->{metadata}{'dc:title'};
 my $author = $ref->{metadata}{'dc:creator'}{content};
-my %filehash;
-$filehash{$_->{id}} = $_->{href} for @{$ref->{manifest}{item}};
-my @content_files = map { "$tempdir/content/OEBPS/".$filehash{$_->{idref}} } @{$ref->{spine}{itemref}};
+my @content_files = map { "$tempdir/content/OEBPS/".$ref->{manifest}{item}{$_->{idref}}{href} } @{$ref->{spine}{itemref}};
 
 my $outbuf = "";
 for my $file (@content_files) {
