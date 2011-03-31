@@ -118,7 +118,7 @@ $ENV{TEXFONTS} =  ".:/home/ubuntu/.texmf-var/fonts//:";
 @cmd = ("platex", "-output-directory", $tempdir, "$tempdir/a.tex");
 runcmd(\@cmd, 'platex');
 
-$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:/home/ubuntu/.fonts:/home/ubuntu/.texmf-var/fonts//:";
+$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:/home/ubuntu/.texmf-var/fonts//:";
 $ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
 @cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/a.pdf", "$tempdir/a.dvi");
 runcmd(\@cmd, 'dvipdfmx');
@@ -174,4 +174,4 @@ foreach my $key (sort keys(%ENV)) {
 foreach my $key (sort keys(%Config)) {
   print "$key = $Config{$key}<p>" if defined $Config{$key};
 }
-#!/home/yj/perl5/perlbrew/perls/current/bin/perl5.12.3
+
