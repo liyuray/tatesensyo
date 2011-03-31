@@ -45,7 +45,7 @@ my $ref = XMLin("$tempdir/content/OEBPS/content.opf");
 my $title = $ref->{metadata}{'dc:title'};
 my $author = $ref->{metadata}{'dc:creator'}{content};
 my %filehash;
-$filehash{$_->{id}} = $_->{href} for @{$ref->{manifest}};
+$filehash{$_->{id}} = $_->{href} for @{$ref->{manifest}{item}};
 my @content_files = map { "$tempdir/content/OEBPS/".$filehash{$_->{idref}} } @{$ref->{spine}{itemref}};
 
 my $outbuf = "";
