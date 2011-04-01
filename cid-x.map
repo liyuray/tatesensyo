@@ -54,20 +54,20 @@ otf-ucmr-v     UniGB-UTF16-V       gbsn00lp.ttf
 otf-ccmr-h     Adobe-GB1-5         gbsn00lp.ttf
 otf-ccmr-v     Identity-V          gbsn00lp.ttf/AG15
 
-otf-ucgr-h     UniGB-UTF16-H       uming.ttc
-otf-ucgr-v     UniGB-UTF16-V       uming.ttc
-otf-ccgr-h     Adobe-GB1-5         uming.ttc
-otf-ccgr-v     Identity-V          uming.ttc/AG15
+otf-ucgr-h     UniGB-UTF16-H       eduSong_Unicode.ttf
+otf-ucgr-v     UniGB-UTF16-V       eduSong_Unicode.ttf
+otf-ccgr-h     Adobe-GB1-5         eduSong_Unicode.ttf
+otf-ccgr-v     Identity-V          eduSong_Unicode.ttf/AG15
 
-otf-utmr-h     UniCNS-UTF16-H      uming.ttc
-otf-utmr-v     UniCNS-UTF16-V      uming.ttc
-otf-ctmr-h     Adobe-CNS1-5        uming.ttc
-otf-ctmr-v     Identity-V          uming.ttc/AC15
+otf-utmr-h     UniCNS-UTF16-H      eduSong_Unicode.ttf
+otf-utmr-v     UniCNS-UTF16-V      eduSong_Unicode.ttf
+otf-ctmr-h     Adobe-CNS1-5        eduSong_Unicode.ttf
+otf-ctmr-v     Identity-V          eduSong_Unicode.ttf/AC15
 
-otf-utgr-h     UniCNS-UTF16-H      ukai.ttc
-otf-utgr-v     UniCNS-UTF16-V      ukai.ttc
-otf-ctgr-h     Adobe-CNS1-5        ukai.ttc
-otf-ctgr-v     Identity-V          ukai.ttc/AC15
+otf-utgr-h     UniCNS-UTF16-H      edukai-3.ttf
+otf-utgr-v     UniCNS-UTF16-V      edukai-3.ttf
+otf-ctgr-h     Adobe-CNS1-5        edukai-3.ttf
+otf-ctgr-v     Identity-V          edukai-3.ttf/AC15
 
 otf-ukmr-h     UniKS-UTF16-H       UnBatang.ttf
 otf-ukmr-v     UniKS-UTF16-V       UnBatang.ttf
