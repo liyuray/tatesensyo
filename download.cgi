@@ -146,16 +146,7 @@ sub gen_tex {
     my $author = shift;
     my $tex = << 'TEX';
 \documentclass[a5paper]{tbook}
-%\\documentclass[a5paper, twocolumn]{tbook}
-\usepackage[deluxe,multi]{otf}
-%\\usepackage[expert, deluxe]{otf}
-%##MyAUTHOR##
-%\\usepackage{utf}
-%\\usepackage{furikana}
-%\\usepackage{type1cm}
-%\\def\\rubykatuji{\\rubyfamily\\tiny}
-%\\def\\rubykatuji{\\tiny}%for UTF package
-%\\renewenvironment{teihon}{\\comment}{\\endcomment}
+\usepackage[noreplace, multi]{otf}
 \usepackage[device=kindle2,size=large]{sensyo}
 TEX
     my $tex1 = << "TEX1";
@@ -166,14 +157,6 @@ TEX1
 \date{}
 \begin{document}
 \setlength{\parindent}{2em}
-%\includegraphics[angle=90, width=10cm, height=10cm]{hlhz/OEBPS/Images/Cover.png}
-%\maketitle
-%\tableofcontents
-%\pagestyle{empty}
-%\pagenumbering{gobble}
-%\tchrm
-%\large
-%\bf
 \input{log/a.txt}
 \end{document}
 TEX2
