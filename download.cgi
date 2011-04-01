@@ -84,6 +84,8 @@ close $fho;
 gen_tex(
     encode('ascii', $title,  sub { sprintf "\\UTFT{%X}", $_[0] }),
     encode('ascii', $author, sub { sprintf "\\UTFT(%X)", $_[0] }),
+    encode('euc-jp', $title),
+    encode('euc-jp', $author),
 );
 
 $ENV{TEXINPUTS} = ".:./tatesensyo:./tatesensyo/texmf/tex/otf:";
@@ -144,12 +146,22 @@ sub output {
 sub gen_tex {
     my $title = shift;
     my $author = shift;
+    my $tj = shift;
+    my $aj = shift;
     my $tex = << 'TEX';
 \documentclass[a5paper]{tbook}
 \usepackage[noreplace, multi]{otf}
 \usepackage[device=kindle2,size=large]{sensyo}
+\usepackage{atbegshi}
+\AtBeginShipoutFirst{\special{pdf:tounicode EUC-UCS2}}
+\usepackage[dvipdfm,%
 TEX
     my $tex1 = << "TEX1";
+pdftitle={$tj},%
+pdfsubject={},%
+pdfauthor={$aj},%
+pdfkeywords={}]{hyperref}
+
 \\title{$title}
 \\author{$author}
 TEX1
@@ -160,7 +172,7 @@ TEX1
 \input{log/a.txt}
 \end{document}
 TEX2
-    open $fho, ">:utf8", "$tempdir/a.tex" or die "$!";
+    open $fho, ">:raw", "$tempdir/a.tex" or die "$!";
     print $fho $tex,$tex1,$tex2;
     close $fho;
 }
