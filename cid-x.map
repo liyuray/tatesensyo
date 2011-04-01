@@ -1,17 +1,8 @@
-%rml            H                   ipam.ttf
-%rmlv           V                   ipam.ttf
+rml            H                   eduSong_Unicode.ttf
+rmlv           V                   eduSong_Unicode.ttf
 
-rml            H                   sazanami-mincho.ttf
-rmlv           V                   sazanami-mincho.ttf
-
-%gbm            H                   ipag.ttf
-%gbmv           V                   ipag.ttf
-
-%gbm            H                   VL-Gothic-Regular.ttf
-%gbmv           V                   VL-Gothic-Regular.ttf
-
-gbm            H                   sazanami-gothic.ttf
-gbmv           V                   sazanami-gothic.ttf
+gbm            H                   ipag.ttf
+gbmv           V                   ipag.ttf
 
 %%% OTF package
 hminr-h        H                   ipam.ttf
