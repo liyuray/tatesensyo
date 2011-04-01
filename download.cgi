@@ -11,6 +11,7 @@ use Encode;
 use utf8;
 use HTML::TreeBuilder;
 use Cwd;
+use Sys::Hostname;
 use Carp;
 $SIG{__DIE__}  = sub { Carp::confess(@_) };
 $SIG{__WARN__} = sub { Carp::cluck(@_) };
@@ -35,7 +36,7 @@ mkdir "$tempdir/log";
 my @cmd = ("wget", "-O$tempdir/a.epub", $epub_url);
 #my @cmd = ("wget", "--trust-server-names", "-P$tempdir", $epub_url);
 my ($in,$out,$err);
-#$ENV{http_proxy} = "http://10.113.2.156:3128";
+$ENV{http_proxy} = "http://10.113.2.156:3128" if hostname() =~ /desktop/;
 runcmd(\@cmd, 'wget');
 
 @cmd = ("7za", "x", "-o$tempdir/content", "$tempdir/a.epub");
