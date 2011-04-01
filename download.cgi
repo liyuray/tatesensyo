@@ -20,6 +20,11 @@ $SIG{__WARN__} = sub { Carp::cluck(@_) };
 
 #print "Content-type: text/html\n\n";
 #print $dir;
+my $puncts = "｀…‥‘’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝";
+my $matchre = join "|", map { sprintf("%X", ord) } split '', $puncts;
+$matchre = qr/\\UTFT\{($matchre)\}/;
+#print $matchre;
+#exit 1;
 
 my $text_encoding = "euc-jp";
 my $plain_encoding = "ascii";
@@ -60,10 +65,10 @@ for my $file (@content_files) {
     #    print Dumper(\%content);
     #    for my $tag qw(title h1 h2 h3) {
     $outbuf .= output("\\chapter{".
-                     decode('utf8',$content{title}[0]->as_text)
-                         ."}").$/;
+                          decode('utf8', $content{title}[0]->as_text)
+                              ."}").$/;
     for my $item (@{$content{p}}) {
-        $outbuf .= output(decode('utf8', $item->as_text));
+        $outbuf .= output( decode('utf8', $item->as_text) );
         #            print $item->as_text;
         $outbuf .= "$/$/";
     }
@@ -72,7 +77,7 @@ for my $file (@content_files) {
 }
 
 my $fho;
-open $fho, ">:raw", "$tempdir/a.txt" or die "$!";
+open $fho, ">:raw", "$tempdir/log/a.txt" or die "$!";
 print $fho $outbuf;
 close $fho;
 
@@ -116,18 +121,24 @@ sub runcmd {
     my $task = shift;
     run3 $cmdh, undef, "$tempdir/log/$task"."out.txt", "$tempdir/log/$task"."err.txt";
 }
-
 sub output {
     my $plain_text = shift;
-    return
-        encode($text_encoding, decode($plain_encoding,
-                                      encode(
-                                          $plain_encoding,
-                                          $plain_text,
-                                          #			Encode::FB_PERLQQ
-                                          sub { sprintf "\\UTFT{%X}",$_[0]	}
-                                      )
-                                  ));
+    my $ret =
+        decode( 'utf8',
+                encode(
+                    $plain_encoding,
+                    $plain_text,
+                    #			Encode::FB_PERLQQ
+                    sub { sprintf "\\UTFT{%X}",$_[0]	}
+                )
+            );
+#    binmode STDOUT, ":utf8";
+#    print $ret, $/;
+    $ret =~ s/$matchre/chr(hex($1))/ge;
+#    print $ret;
+#    exit 1;
+    $ret = encode( $text_encoding, $ret);
+    return $ret;
 }
 
 sub gen_tex {
@@ -163,7 +174,7 @@ TEX1
 %\tchrm
 %\large
 %\bf
-\input{a.txt}
+\input{log/a.txt}
 \end{document}
 TEX2
     open $fho, ">:utf8", "$tempdir/a.tex" or die "$!";
