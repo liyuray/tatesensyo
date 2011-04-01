@@ -90,8 +90,9 @@ gen_tex(
 
 $ENV{TEXINPUTS} = ".:./tatesensyo:./tatesensyo/texmf/tex/otf:";
 $ENV{TEXFONTS} =  ".:./tatesensyo/texmf/fonts//:";
-@cmd = ("platex", "-output-directory", $tempdir, "$tempdir/a.tex");
-runcmd(\@cmd, 'platex');
+@cmd = ("platex", "-output-directory", $tempdir, "$tempdir/log/a.tex");
+runcmd(\@cmd, 'platex1');
+#runcmd(\@cmd, 'platex2');
 
 $ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:./tatesensyo/texmf/fonts//:";
 $ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
@@ -102,9 +103,9 @@ my $outfile;
 if (-r "$tempdir/$title-$author.pdf" and !$devel) {
     $outfile = "$tempdir/$title-$author.pdf";
 } else {
-    @cmd = ("7za", "a", "$tempdir/log.7z", "$tempdir/log");
+    @cmd = ("7za", "a", "-tzip", "$tempdir/log.zip", "$tempdir/log");
     run3 \@cmd, undef, "/dev/null", "/dev/null";
-    $outfile = "$tempdir/log.7z";
+    $outfile = "$tempdir/log.zip";
 }
 
 die "no $outfile!$/" unless -r $outfile;
@@ -172,7 +173,7 @@ TEX1
 \input{log/a.txt}
 \end{document}
 TEX2
-    open $fho, ">:raw", "$tempdir/a.tex" or die "$!";
+    open $fho, ">:raw", "$tempdir/log/a.tex" or die "$!";
     print $fho $tex,$tex1,$tex2;
     close $fho;
 }
