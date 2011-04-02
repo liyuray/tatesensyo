@@ -1,0 +1,10 @@
+
+* TODO add Haodoo http://www.haodoo.net/?M=d&P=A434.epub
+* the uming punct do not consider vertical place. and not chinese style. => issue.
+* the eduSong punct has correct comma and period support. but very weak on onthers. => issue.
+* need to find a better punct for traditional chinese.
+* the pdf title and author are using euc encoding kanji to represent chinese now. may have some characters not correct.
+* refine layout by referring to aozora kindle.
+* currently
+** punct: eduSong. (because uming cannot have correct chinese punct position).
+** kanji: uming. (because eduSong lacks some characters glyph).
