@@ -8,3 +8,16 @@
 * currently
 ** punct: eduSong. (because uming cannot have correct chinese punct position).
 ** kanji: uming. (because eduSong lacks some characters glyph).
+
+* Write test cases for punctuation.
+* Keep ePub files on aws.
+* Read the Tex book.
+* Commercial novels are in vertical.
+* The puncts in commercial books are in center.
+* The wucongmin ecconomics book in Tex has low puncts.
+* Uming's puncts places are in left.
+* Edusong's are in center but has many misses.
+* Ipam's are correct in Japanese sense.
+* Use Japanese sense first.
+* TODO Write google page
+* TODO Apply google ad sense.
