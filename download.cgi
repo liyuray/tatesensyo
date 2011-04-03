@@ -20,7 +20,7 @@ $SIG{__WARN__} = sub { Carp::cluck(@_) };
 
 #print "Content-type: text/html\n\n";
 #print $dir;
-my $puncts = "｀…‥‘’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝";
+my $puncts = '｀…‥‘’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—';
 my $matchre = join "|", map { sprintf("%X", ord) } split '', $puncts;
 $matchre = qr/\\UTFT\{($matchre)\}/;
 #print $matchre;
@@ -31,7 +31,7 @@ my $plain_encoding = "ascii";
 #umask 0666;
 #umask 0750;
 
-my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=6";
+my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=1";
 my $devel = param('devel');
 
 my $tempdir = tempdir( CLEANUP => 1 );
@@ -136,8 +136,16 @@ sub output {
                 )
             );
 #    binmode STDOUT, ":utf8";
-#    print $ret, $/;
+#    print($ret, $/) if $ret =~ /\{2014\}/;
     $ret =~ s/$matchre/chr(hex($1))/ge;
+#    print($ret, $/) if $ret =~ /—/;
+    $ret =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
+#    binmode STDOUT, ":raw";
+#    print(encode('euc-jp', $ret), $/), exit 1 if $ret =~ /—/;
+#    $ret =~ s/([\？\！])　/$1{}/g;
+    $ret =~ s/？　/？{}/g;
+    $ret =~ s/！　/！{}/g;
+    
 #    print $ret;
 #    exit 1;
     $ret = encode( $text_encoding, $ret);
