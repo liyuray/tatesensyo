@@ -36,8 +36,8 @@ my $plain_encoding = "ascii";
 my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=1";
 my $devel = param('devel');
 
-my $tempdir = tempdir( CLEANUP => 1 );
-#my $tempdir = tempdir( CLEANUP => 0 );
+#my $tempdir = tempdir( CLEANUP => 1 );
+my $tempdir = tempdir( CLEANUP => 0 );
 mkdir "$tempdir/log";
 
 my @cmd = ("wget", "-O$tempdir/a.epub", $epub_url);
@@ -66,10 +66,10 @@ for my $file (@content_files) {
     } qw(title h1 h2 p);
     #    print Dumper(\%content);
     #    for my $tag qw(title h1 h2 h3) {
-#    $outbuf .= output("\\chapter{".
-#                          decode('utf8', $content{title}[0]->as_text)
-    #                              ."}").$/;
-    $outbuf .= output( decode( 'utf8', $content{title}[0]->as_text ) )."$/$/";
+    $outbuf .= output("\\chapter{".
+                          decode('utf8', $content{title}[0]->as_text)
+                              ."}").$/;
+#    $outbuf .= output( decode( 'utf8', $content{title}[0]->as_text ) )."$/$/";
     for my $item (@{$content{p}}) {
         $outbuf .= output( decode('utf8', $item->as_text) );
         #            print $item->as_text;
