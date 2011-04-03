@@ -140,6 +140,7 @@ sub output {
     $ret =~ s/$matchre/chr(hex($1))/ge;
 #    print($ret, $/) if $ret =~ /—/;
     $ret =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
+    $ret =~ s/～/〜/g;
 #    binmode STDOUT, ":raw";
 #    print(encode('euc-jp', $ret), $/), exit 1 if $ret =~ /—/;
 #    $ret =~ s/([\？\！])　/$1{}/g;
