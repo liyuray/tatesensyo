@@ -20,7 +20,7 @@ $SIG{__WARN__} = sub { Carp::cluck(@_) };
 
 #print "Content-type: text/html\n\n";
 #print $dir;
-my $puncts = '｀…‥‘’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—∼';
+my $puncts = '｀…‥‘’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
 my $matchre = join "|", map { sprintf("%X", ord) } split '', $puncts;
 $matchre = qr/\\UTFT\{($matchre)\}/;
 #print $matchre;
