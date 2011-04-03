@@ -36,8 +36,8 @@ my $plain_encoding = "ascii";
 my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=1";
 my $devel = param('devel');
 
-#my $tempdir = tempdir( CLEANUP => 1 );
-my $tempdir = tempdir( CLEANUP => 0 );
+my $tempdir = tempdir( CLEANUP => 1 );
+#my $tempdir = tempdir( CLEANUP => 0 );
 mkdir "$tempdir/log";
 
 my @cmd = ("wget", "-O$tempdir/a.epub", $epub_url);
