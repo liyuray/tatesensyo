@@ -20,9 +20,11 @@ $SIG{__WARN__} = sub { Carp::cluck(@_) };
 
 #print "Content-type: text/html\n\n";
 #print $dir;
-my $puncts = '｀…‥‘’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
-my $matchre = join "|", map { sprintf("%X", ord) } split '', $puncts;
-$matchre = qr/\\UTFT\{($matchre)\}/;
+my $puncts = '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
+#my $matchre = join "|", map { sprintf("%X", ord) } split '', $puncts;
+my $matchre1 = join '', map { "\\$_" } split '', $puncts;
+#$matchre = qr/\\UTFT\{($matchre)\}/;
+$matchre1 = qr/([^\x20-\x7e$matchre1])/;
 #print $matchre;
 #exit 1;
 
@@ -126,31 +128,24 @@ sub runcmd {
 }
 sub output {
     my $plain_text = shift;
-    my $ret =
-        decode( 'utf8',
-                encode(
-                    $plain_encoding,
-                    $plain_text,
-                    #			Encode::FB_PERLQQ
-                    sub { sprintf "\\UTFT{%X}",$_[0]	}
-                )
-            );
+    (my $ret1 = $plain_text) =~ s/$matchre1/sprintf("\\UTFT{%X}",ord $1)/ge;
 #    binmode STDOUT, ":utf8";
-#    print($ret, $/) if $ret =~ /\{2014\}/;
-    $ret =~ s/$matchre/chr(hex($1))/ge;
+#    print($ret1, $/);
+#    exit 1;
+#    $ret =~ s/$matchre/chr(hex($1))/ge;
 #    print($ret, $/) if $ret =~ /—/;
-    $ret =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
-    $ret =~ s/～/〜/g;
+    $ret1 =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
+    $ret1 =~ s/～/〜/g;          # tricky: use WAVE DASH
 #    binmode STDOUT, ":raw";
 #    print(encode('euc-jp', $ret), $/), exit 1 if $ret =~ /—/;
 #    $ret =~ s/([\？\！])　/$1{}/g;
-    $ret =~ s/？　/？{}/g;
-    $ret =~ s/！　/！{}/g;
+#    $ret =~ s/？　/？{}/g;
+#    $ret =~ s/！　/！{}/g;
     
 #    print $ret;
 #    exit 1;
-    $ret = encode( $text_encoding, $ret);
-    return $ret;
+    $ret1 = encode( $text_encoding, $ret1);
+    return $ret1;
 }
 
 sub gen_tex {
