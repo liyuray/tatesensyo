@@ -66,9 +66,10 @@ for my $file (@content_files) {
     } qw(title h1 h2 p);
     #    print Dumper(\%content);
     #    for my $tag qw(title h1 h2 h3) {
-    $outbuf .= output("\\chapter{".
-                          decode('utf8', $content{title}[0]->as_text)
-                              ."}").$/;
+#    $outbuf .= output("\\chapter{".
+#                          decode('utf8', $content{title}[0]->as_text)
+    #                              ."}").$/;
+    $outbuf .= output( decode( 'utf8', $content{title}[0]->as_text ) )."$/$/";
     for my $item (@{$content{p}}) {
         $outbuf .= output( decode('utf8', $item->as_text) );
         #            print $item->as_text;
