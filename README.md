@@ -33,6 +33,13 @@ Installed:
 * ttf-arphic-uming
 * ttf-arphic-ukai
 
+perl modules:
+
+* curl -L http://cpanmin.us | perl - --sudo App::cpanminus
+* XML::Simple
+* HTML::TreeBuilder
+* IPC::Run3
+
 URLs:
 
 * [阿Q正傳](http://ec2-122-248-208-58.ap-southeast-1.compute.amazonaws.com/cgi-bin/download.cgi?epub=http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=1)
