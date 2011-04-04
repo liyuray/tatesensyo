@@ -94,13 +94,14 @@ gen_tex(
 
 $ENV{TEXINPUTS} = ".:./tatesensyo:./tatesensyo/texmf/tex/otf:";
 $ENV{TEXFONTS} =  ".:./tatesensyo/texmf/fonts//:";
-@cmd = ("platex", "-output-directory", $tempdir, "$tempdir/log/a.tex");
+@cmd = ("platex", "-kanji=euc", "-output-directory", "$tempdir/log", "$tempdir/log/a.tex");
 runcmd(\@cmd, 'platex1');
 #runcmd(\@cmd, 'platex2');
 
 $ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:./tatesensyo/texmf/fonts//:";
-$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
-@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/$title-$author.pdf", "$tempdir/a.dvi");
+#$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
+$ENV{CMAPINPUTS} = ".:./tatesensyo/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/$title-$author.pdf", "$tempdir/log/a.dvi");
 runcmd(\@cmd, 'dvipdfmx');
 
 my $outfile;
@@ -159,15 +160,15 @@ sub gen_tex {
 \documentclass[a5paper]{tbook}
 \usepackage[noreplace, multi]{otf}
 \usepackage[device=kindle2,size=large]{sensyo}
-\usepackage{atbegshi}
-\AtBeginShipoutFirst{\special{pdf:tounicode EUC-UCS2}}
-\usepackage[dvipdfm,%
+%\usepackage{atbegshi}
+%\AtBeginShipoutFirst{\special{pdf:tounicode EUC-UCS2}}
+%\usepackage[dvipdfm,%
 TEX
     my $tex1 = << "TEX1";
-pdftitle={$tj},%
-pdfsubject={},%
-pdfauthor={$aj},%
-pdfkeywords={}]{hyperref}
+\%pdftitle={$tj},%
+\%pdfsubject={},%
+\%pdfauthor={$aj},%
+\%pdfkeywords={}]{hyperref}
 
 \\title{$title}
 \\author{$author}
@@ -176,7 +177,7 @@ TEX1
 \date{}
 \begin{document}
 \setlength{\parindent}{2em}
-\input{log/a.txt}
+\input{a.txt}
 \end{document}
 TEX2
     open $fho, ">:raw", "$tempdir/log/a.tex" or die "$!";

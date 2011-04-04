@@ -18,6 +18,9 @@
 * Uming's puncts places are in left.
 * Edusong's are in center but has many misses.
 * Ipam's are correct in Japanese sense.
-* Use Japanese sense first.
+* DONE Use Japanese sense first.
 * TODO Write google page
 * TODO Apply google ad sense.
+* TODO check appropriate subtitle.
+* TODO refactor like takahashim's aozora4reader.rb.
+* TODO 

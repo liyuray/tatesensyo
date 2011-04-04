@@ -251,8 +251,7 @@
 \def\subtitle#1{\gdef\@subtitle{#1}}
 \def\subauthor#1{\gdef\@subauthor{#1}}
 \def\biblioname{青空文庫}
-\def\azbanner{\hbox{\yoko\includegraphics{hlhz/OEBPS/Images/logo.png}}}
-%\def\azbanner{\hbox{\yoko\includegraphics[height= 1.5cm]{azlogo.eps}}\hspace*{50Q}}
+\def\azbanner{\hbox{\yoko\includegraphics[height= 1.5cm]{azlogo.eps}}\hspace*{50Q}}
 \renewcommand{\maketitle}{
 	\cleardoublepage
 	\if@twocolumn
@@ -273,7 +272,7 @@
 	\endgroup
 	\clearpage
 	\thispagestyle{empty}
-	\az@title@back
+%	\az@title@back
 	\if@restonecol\twocolumn \else \newpage \fi
 	\clearpage
 	\setcounter{footnote}{0}%

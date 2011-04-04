@@ -24,10 +24,10 @@ otf-utmr-v     UniCNS-UTF16-V      uming.ttc
 otf-ctmr-h     Adobe-CNS1-5        uming.ttc
 otf-ctmr-v     Identity-V          uming.ttc/AC15
 
-otf-utgr-h     UniCNS-UTF16-H      edukai-3.ttf
-otf-utgr-v     UniCNS-UTF16-V      edukai-3.ttf
-otf-ctgr-h     Adobe-CNS1-5        edukai-3.ttf
-otf-ctgr-v     Identity-V          edukai-3.ttf/AC15
+otf-utgr-h     UniCNS-UTF16-H      ukai.ttc
+otf-utgr-v     UniCNS-UTF16-V      ukai.ttc
+otf-ctgr-h     Adobe-CNS1-5        ukai.ttc
+otf-ctgr-v     Identity-V          ukai.ttc/AC15
 
 hminb-h        H                   ipag.ttf
 hminb-v        V                   ipag.ttf

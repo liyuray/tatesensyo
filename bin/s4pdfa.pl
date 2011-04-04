@@ -16,7 +16,7 @@ my %tc = (
 );
 my $tempdir;
 for my $epubfile (@ARGV) {
-    $tempdir = tempdir( CLEANUP => 0 );
+    $tempdir = tempdir( CLEANUP => 1 );
     mkdir "$tempdir/log";
     my $texfile = "$tempdir/log/a.tex";
     my $epubdir = "$tempdir/content";
