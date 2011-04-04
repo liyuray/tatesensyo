@@ -45,7 +45,7 @@ sub main {
 #    exit 1;
     my $outbuf = "";
     for my $file (@content_files) {
-        print $file,$/;
+#        print $file,$/;
         my $tree = HTML::TreeBuilder->new; # empty tree
         $tree->parse_file($file);
 #        $tree->dump;
@@ -59,7 +59,7 @@ sub main {
 #        $outbuf .= output( $te, decode( 'utf8', $content{title}[0]->as_text ) )."$/$/";
         if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
             $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\Large ".encode_chinese(decode('utf8',$content{h1}[0]->as_text))."}$/";
+            $outbuf .= "{\\large ".encode_chinese(decode('utf8',$content{h1}[0]->as_text))."}$/";
             $outbuf .= q(\end{jisage}).$/.$/;
             $outbuf .= q(\par\vspace{8mm}).$/;
         }
@@ -136,22 +136,9 @@ sub output {
     my $plain_text = shift;
 
     my $ret1 = encode_chinese($plain_text);
-#    binmode STDOUT, ":utf8";
-#    print($ret1, $/);
-#    exit 1;
-#    $ret =~ s/$matchre/chr(hex($1))/ge;
-#    print($ret, $/) if $ret =~ /—/;
     $ret1 =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
     $ret1 =~ s/～/〜/g;          # tricky: use WAVE DASH
     $ret1 =~ s/！！！/\\rensuji{!!!}/g;
-#    binmode STDOUT, ":raw";
-#    print(encode($te, $ret), $/), exit 1 if $ret =~ /—/;
-#    $ret =~ s/([\？\！])　/$1{}/g;
-#    $ret =~ s/？　/？{}/g;
-#    $ret =~ s/！　/！{}/g;
-#    print $ret;
-#    exit 1;
-#    $ret1 = encode( $te, $ret1);
     return $ret1;
 }
 
