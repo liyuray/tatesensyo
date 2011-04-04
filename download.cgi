@@ -1,107 +1,65 @@
 #!/usr/bin/perl
+use FindBin;
+use lib "$FindBin::RealBin/lib";
+use Text::sensyo4kindle;
+use IPC::Run3;
+use File::Temp qw/ tempfile tempdir /;
 use strict;
 use warnings;
+use strict;
 use Config;
-use IPC::Run3;
 use CGI qw(:standard);
-use File::Temp qw/ tempfile tempdir /;
-use XML::Simple;
 use Data::Dumper;
 use Encode;
 use utf8;
-use HTML::TreeBuilder;
 use Cwd;
 use Sys::Hostname;
 use Carp;
 $SIG{__DIE__}  = sub { Carp::confess(@_) };
 $SIG{__WARN__} = sub { Carp::cluck(@_) };
-
-#my $dir = getcwd;
-
-#print "Content-type: text/html\n\n";
-#print $dir;
-my $puncts = '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
-#my $matchre = join "|", map { sprintf("%X", ord) } split '', $puncts;
-my $matchre1 = join '', map { "\\$_" } split '', $puncts;
-#$matchre = qr/\\UTFT\{($matchre)\}/;
-$matchre1 = qr/([^\x20-\x7e$matchre1])/;
-#print $matchre;
-#exit 1;
-
-my $text_encoding = "euc-jp";
-my $plain_encoding = "ascii";
-#umask 0666;
-#umask 0750;
+my $te = 'euc-jp';
+my %tc = (
+    'sjis' => 'sjis',
+    'euc-jp' => 'euc',
+    'utf8' => 'utf8',
+);
+my $root=$FindBin::RealBin;
 
 my $epub_url = param('epub') || "http://wp.1000ebooks.tw/wp-content/plugins/download-monitor/download.php?id=1";
 my $devel = param('devel');
 
-my $tempdir = tempdir( CLEANUP => 1 );
-#my $tempdir = tempdir( CLEANUP => 0 );
+#my $tempdir = tempdir( CLEANUP => 1 );
+my $tempdir = tempdir( CLEANUP => 0 );
 mkdir "$tempdir/log";
 
+$ENV{PATH} = '/usr/local/bin:'.$ENV{PATH} if $^O eq 'darwin';
 my @cmd = ("wget", "-O$tempdir/a.epub", $epub_url);
 #my @cmd = ("wget", "--trust-server-names", "-P$tempdir", $epub_url);
-my ($in,$out,$err);
 $ENV{http_proxy} = "http://10.113.2.156:3128" if hostname() =~ /desktop/;
 runcmd(\@cmd, 'wget');
 
 @cmd = ("7za", "x", "-o$tempdir/content", "$tempdir/a.epub");
 runcmd(\@cmd, '7zax');
 
-my $ref = XMLin("$tempdir/content/OEBPS/content.opf");
+my $texfile = "$tempdir/log/a.tex";
+my $epubdir = "$tempdir/content";
+my ($title, $author) =Text::sensyo4kindle::main($epubdir, $texfile, $te);
 
-my $title = $ref->{metadata}{'dc:title'};
-my $author = $ref->{metadata}{'dc:creator'}{content};
-my @content_files = map { "$tempdir/content/OEBPS/".$ref->{manifest}{item}{$_->{idref}}{href} } @{$ref->{spine}{itemref}};
-
-my $outbuf = "";
-for my $file (@content_files) {
-#    print $file,$/;
-    my $tree = HTML::TreeBuilder->new; # empty tree
-    $tree->parse_file($file);
-#    $tree->dump;
-    my %content = map {
-        $_ => [$tree->look_down( '_tag' , $_ )];
-    } qw(title h1 h2 p);
-    #    print Dumper(\%content);
-    #    for my $tag qw(title h1 h2 h3) {
-#    $outbuf .= output("\\chapter{".
-#                          decode('utf8', $content{title}[0]->as_text)
-#                              ."}").$/;
-    $outbuf .= output( decode( 'utf8', $content{title}[0]->as_text ) )."$/$/";
-    for my $item (@{$content{p}}) {
-        $outbuf .= output( decode('utf8', $item->as_text) );
-        #            print $item->as_text;
-        $outbuf .= "$/$/";
-    }
-    #        print $tag, ":", map { defined $_ && ref $_ eq 'HASH' && $_->as_text } @{$content{$tag}}, $/;
-    $outbuf .= '\clearpage';
-    $tree = $tree->delete;
-}
-
-my $fho;
-open $fho, ">:raw", "$tempdir/log/a.txt" or die "$!";
-print $fho $outbuf;
-close $fho;
-
-gen_tex(
-    encode('ascii', $title,  sub { sprintf "\\UTFT{%X}", $_[0] }),
-    encode('ascii', $author, sub { sprintf "\\UTFT(%X)", $_[0] }),
-    encode('euc-jp', $title),
-    encode('euc-jp', $author),
-);
-
-$ENV{TEXINPUTS} = ".:./tatesensyo:./tatesensyo/texmf/tex/otf:";
-$ENV{TEXFONTS} =  ".:./tatesensyo/texmf/fonts//:";
-@cmd = ("platex", "-kanji=euc", "-output-directory", "$tempdir/log", "$tempdir/log/a.tex");
+$ENV{TEXINPUTS} = "$root:$root/texmf/tex/otf:";
+$ENV{TEXFONTS} =  ".:$root/texmf/fonts//:";
+@cmd = ("platex", "-kanji=".$tc{$te}, "-output-directory", "$tempdir/log", $texfile);
+$ENV{PATH} = "/Applications/pTeX.app/teTeX/bin:".$ENV{PATH} if $^O eq 'darwin';
 runcmd(\@cmd, 'platex1');
-#runcmd(\@cmd, 'platex2');
 
-$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:./tatesensyo/texmf/fonts//:";
-#$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
-$ENV{CMAPINPUTS} = ".:./tatesensyo/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
-@cmd = ("dvipdfmx", "-vv", "-z", "9", "-f","./tatesensyo/cid-x.map", "-o", "$tempdir/$title-$author.pdf", "$tempdir/log/a.dvi");
+$ENV{TEXFONTS} =  ".:/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:$root/texmf/fonts//:";
+$ENV{CMAPINPUTS} = do {
+    if ($^O eq 'darwin') {
+        ".:$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+    } else {
+        ".:/usr/share/ghostscript/8.71/Resource/CMap:"
+    }
+};
+@cmd = ("dvipdfmx", "-vv", "-f","$root/cid-x.map", "-o", "$tempdir/$title-$author.pdf", "$tempdir/log/a.dvi");
 runcmd(\@cmd, 'dvipdfmx');
 
 my $outfile;
@@ -129,71 +87,3 @@ sub runcmd {
     my $task = shift;
     run3 $cmdh, undef, "$tempdir/log/$task"."out.txt", "$tempdir/log/$task"."err.txt";
 }
-sub output {
-    my $plain_text = shift;
-    (my $ret1 = $plain_text) =~ s/$matchre1/sprintf("\\UTFT{%X}",ord $1)/ge;
-#    binmode STDOUT, ":utf8";
-#    print($ret1, $/);
-#    exit 1;
-#    $ret =~ s/$matchre/chr(hex($1))/ge;
-#    print($ret, $/) if $ret =~ /—/;
-    $ret1 =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
-    $ret1 =~ s/～/〜/g;          # tricky: use WAVE DASH
-#    binmode STDOUT, ":raw";
-#    print(encode('euc-jp', $ret), $/), exit 1 if $ret =~ /—/;
-#    $ret =~ s/([\？\！])　/$1{}/g;
-#    $ret =~ s/？　/？{}/g;
-#    $ret =~ s/！　/！{}/g;
-    
-#    print $ret;
-#    exit 1;
-    $ret1 = encode( $text_encoding, $ret1);
-    return $ret1;
-}
-
-sub gen_tex {
-    my $title = shift;
-    my $author = shift;
-    my $tj = shift;
-    my $aj = shift;
-    my $tex = << 'TEX';
-\documentclass[a5paper]{tbook}
-\usepackage[noreplace, multi]{otf}
-\usepackage[device=kindle2,size=large]{sensyo}
-%\usepackage{atbegshi}
-%\AtBeginShipoutFirst{\special{pdf:tounicode EUC-UCS2}}
-%\usepackage[dvipdfm,%
-TEX
-    my $tex1 = << "TEX1";
-\%pdftitle={$tj},%
-\%pdfsubject={},%
-\%pdfauthor={$aj},%
-\%pdfkeywords={}]{hyperref}
-
-\\title{$title}
-\\author{$author}
-TEX1
-    my $tex2 = << 'TEX2';
-\date{}
-\begin{document}
-\setlength{\parindent}{2em}
-\input{a.txt}
-\end{document}
-TEX2
-    open $fho, ">:raw", "$tempdir/log/a.tex" or die "$!";
-    print $fho $tex,$tex1,$tex2;
-    close $fho;
-}
-
-__END__
-
-
-__END__
-
-foreach my $key (sort keys(%ENV)) {
-#  print "$key = $ENV{$key}<p>";
-}
-foreach my $key (sort keys(%Config)) {
-  print "$key = $Config{$key}<p>" if defined $Config{$key};
-}
-
