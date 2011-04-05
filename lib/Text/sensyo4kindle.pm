@@ -1,13 +1,13 @@
 package Text::sensyo4kindle;
+our $VERSION = "0.0001";
 BEGIN {
     require 5.006_000;
     use utf8;
     our $matchre = join '', map { "\\$_" } split '',
         '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
-    our $puncts = '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
     our $matchre1 = qr/([^\x20-\x7e$matchre])/;
 #    our $te = "sjis";
-} # i.e. 5.6.0
+}
 use strict;
 use warnings;
 use Encode;
@@ -22,8 +22,6 @@ Text::sensyo4kindle - vertical TeX for epub
 version 0.001
 
 =cut
-
-our $VERSION = '0.001';
 
 use XML::Simple;
 use HTML::TreeBuilder;
@@ -103,14 +101,12 @@ sub gen_tex {
 \documentclass[a5paper]{tbook}
 \usepackage[noreplace, multi]{otf}
 \usepackage[device=kindle2,size=large]{sensyo}
-%\usepackage{atbegshi}
-%\AtBeginShipoutFirst{\special{pdf:tounicode EUC-UCS2}}
-%\usepackage[dvipdfm,%
 \usepackage[dvipdfm,bookmarks=false,bookmarksnumbered=false,hyperfootnotes=false,%
 TEX
     my $tex1 = << "TEX1";
 pdftitle={$title},%
 pdfauthor={$author},%
+pdfproducer={縱覽千書zonglanqianshu v$VERSION},%
 pdfkeywords={}]{hyperref}
 %% Bookmarkの文字化け対策（日本語向け）
 \\ifnum 46273=\\euc"B4C1 % 46273 == 0xB4C1 == 漢(EUC-JP)
