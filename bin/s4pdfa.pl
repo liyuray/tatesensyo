@@ -18,6 +18,8 @@ my $result = GetOptions (
 die "no epub file specified!" if scalar @ARGV < 1;
 #die "no output file!" if scalar @ARGV < 2;
 
+my $verbose;
+my $result = GetOptions ( "verbose" => \$verbose );
 my $te = 'euc-jp';
 my %tc = (
     'sjis' => 'sjis',
@@ -46,8 +48,13 @@ for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
     #runcmd(\@cmd, 'platex2');
 
     $ENV{TEXFONTS} =  "/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:$root/texmf/fonts//:";
-    #$ENV{CMAPINPUTS} = ".:/usr/share/ghostscript/8.71/Resource/CMap:";
-    $ENV{CMAPINPUTS} = "$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+    $ENV{CMAPINPUTS} = do {
+        if ($^O eq 'darwin') {
+            ".:$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+        } else {
+            "/usr/share/ghostscript/8.71/Resource/CMap:"
+        }
+    };
     @cmd = ("dvipdfmx", "-vvvvv", "-f","$root/cid-x.map", "-o", "$title-$author.pdf", "$tempdir/log/a.dvi");
     runcmd(\@cmd, 'dvipdfmx');
 }
