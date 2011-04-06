@@ -10,11 +10,6 @@ use warnings;
 use Getopt::Long;
 
 
-my $verbose;
-my $result = GetOptions (
-    'verbose' => \$verbose
-);
-
 die "no epub file specified!" if scalar @ARGV < 1;
 #die "no output file!" if scalar @ARGV < 2;
 
@@ -50,7 +45,7 @@ for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
     $ENV{TEXFONTS} =  "/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:$root/texmf/fonts//:";
     $ENV{CMAPINPUTS} = do {
         if ($^O eq 'darwin') {
-            ".:$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+            "$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
         } else {
             "/usr/share/ghostscript/8.71/Resource/CMap:"
         }
