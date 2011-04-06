@@ -101,19 +101,22 @@ sub gen_tex {
 \documentclass[a5paper]{tbook}
 \usepackage[noreplace, multi]{otf}
 \usepackage[device=kindle2,size=large]{sensyo}
-\usepackage[dvipdfm,bookmarks=false,bookmarksnumbered=false,hyperfootnotes=false,%
+%\usepackage[dvipdfm,bookmarks=false,bookmarksnumbered=false,hyperfootnotes=false,%
+\usepackage[dvipdfm, pdfproducer={zonglanqianshu}]{hyperref}
 TEX
+#\%pdftitle={$title},%
+#\%pdfauthor={$author},%
+#\%pdfproducer={縱覽千書zonglanqianshu v$VERSION},%
+
     my $tex1 = << "TEX1";
-pdftitle={$title},%
-pdfauthor={$author},%
-pdfproducer={縱覽千書zonglanqianshu v$VERSION},%
-pdfkeywords={}]{hyperref}
+%pdfproducer={zonglanqianshu},%
+%pdfkeywords={}]{hyperref}
 %% Bookmarkの文字化け対策（日本語向け）
-\\ifnum 46273=\\euc"B4C1 % 46273 == 0xB4C1 == 漢(EUC-JP)
-  \\AtBeginDvi{\\special{pdf:tounicode EUC-UCS2}}%
-\\else
-  \\AtBeginDvi{\\special{pdf:tounicode 90ms-RKSJ-UCS2}}%
-\\fi
+%\\ifnum 46273=\\euc"B4C1 % 46273 == 0xB4C1 == 漢(EUC-JP)
+%  \\AtBeginDvi{\\special{pdf:tounicode EUC-UCS2}}%
+%\\else
+%  \\AtBeginDvi{\\special{pdf:tounicode 90ms-RKSJ-UCS2}}%
+%\\fi
 
 \\title{$t1}
 \\author{$a1}

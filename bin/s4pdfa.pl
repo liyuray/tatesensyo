@@ -7,7 +7,13 @@ use File::Temp qw/ tempfile tempdir /;
 use Encode;
 use strict;
 use warnings;
+use Getopt::Long;
 
+
+my $verbose;
+my $result = GetOptions (
+    'verbose' => \$verbose
+);
 
 die "no epub file specified!" if scalar @ARGV < 1;
 #die "no output file!" if scalar @ARGV < 2;
@@ -25,7 +31,7 @@ $ENV{PATH} = '/Applications/pTeX.app/teTeX/bin:/usr/local/bin:'.$ENV{PATH} if $^
 
 my $tempdir;
 for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
-    $tempdir = tempdir( CLEANUP => 1 );
+    $tempdir = tempdir( CLEANUP => !$verbose );
     mkdir "$tempdir/log";
     my $texfile = "$tempdir/log/a.tex";
     my $epubdir = "$tempdir/content";
