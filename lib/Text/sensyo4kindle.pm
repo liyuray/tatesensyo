@@ -19,7 +19,7 @@ Text::sensyo4kindle - vertical TeX for epub
 
 =head1 VERSION
 
-version 0.001
+version 0.0001
 
 =cut
 
@@ -45,25 +45,24 @@ sub main {
     for my $file (@content_files) {
 #        print $file,$/;
         my $tree = HTML::TreeBuilder->new; # empty tree
-        $tree->parse_file($file);
+        open my $fh, "<:utf8", $file or die $!;
+        $tree->parse_file($fh);
 #        $tree->dump;
 #        exit 1;
         my %content = map {
             $_ => [$tree->look_down( '_tag' , $_ )];
         } qw(title h1 h2 p);
         if ($content{title}[0]->as_text and $file =~/Section\d+/) {
-            $outbuf .= "\\subtitle{".encode_chinese(decode('utf8',$content{title}[0]->as_text))."}".$/;
+            $outbuf .= "\\subtitle{".encode_chinese( $content{title}[0]->as_text )."}".$/;
         }
-#        $outbuf .= output( $te, decode( 'utf8', $content{title}[0]->as_text ) )."$/$/";
         if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
             $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\large ".encode_chinese(decode('utf8',$content{h1}[0]->as_text))."}$/";
+            $outbuf .= "{\\large ".encode_chinese( $content{h1}[0]->as_text )."}$/";
             $outbuf .= q(\end{jisage}).$/.$/;
             $outbuf .= q(\par\vspace{8mm}).$/;
         }
         for my $item (@{$content{p}}) {
-            $outbuf .= output( $te, decode('utf8', $item->as_text) );
-            #            print $item->as_text;
+            $outbuf .= output( $te, $item->as_text );
             $outbuf .= "$/$/";
         }
         #        print $tag, ":", map { defined $_ && ref $_ eq 'HASH' && $_->as_text } @{$content{$tag}}, $/;
@@ -90,13 +89,24 @@ sub encode_chinese {
     return $ret;
 }
 
+sub output {
+    my $te = shift;
+    my $plain_text = shift;
+
+    my $ret1 = encode_chinese($plain_text);
+    $ret1 =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
+    $ret1 =~ s/～/〜/g;          # tricky: use WAVE DASH
+    $ret1 =~ s/！！！/\\rensuji{!!!}/g;
+    return $ret1;
+}
+
 sub gen_tex {
     my $title = shift;
     my $author = shift;
     my $te = shift;
 
-    my $t1 = encode('ascii', $title,  sub { sprintf "\\UTFT{%X}", $_[0] });
-    my $a1 = encode('ascii', $author, sub { sprintf "\\UTFT{%X}", $_[0] });
+    my $t1 = encode_chinese($title);
+    my $a1 = encode_chinese($author);
     my $tex = << 'TEX';
 \documentclass[a5paper]{tbook}
 \usepackage[noreplace, multi]{otf}
@@ -127,17 +137,6 @@ TEX1
 \setlength{\parindent}{2em}
 TEX2
     return encode($te,$tex.$tex1.$tex2);
-}
-
-sub output {
-    my $te = shift;
-    my $plain_text = shift;
-
-    my $ret1 = encode_chinese($plain_text);
-    $ret1 =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
-    $ret1 =~ s/～/〜/g;          # tricky: use WAVE DASH
-    $ret1 =~ s/！！！/\\rensuji{!!!}/g;
-    return $ret1;
 }
 
 1;
