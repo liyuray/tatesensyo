@@ -8,7 +8,9 @@ use Encode;
 use strict;
 use warnings;
 use Getopt::Long;
-
+use Carp;
+$SIG{__DIE__}  = sub { Carp::confess(@_) };
+$SIG{__WARN__} = sub { Carp::cluck(@_) };
 
 die "no epub file specified!" if scalar @ARGV < 1;
 #die "no output file!" if scalar @ARGV < 2;
