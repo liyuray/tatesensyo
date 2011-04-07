@@ -4,7 +4,7 @@ BEGIN {
     require 5.006_000;
     use utf8;
     our $matchre = join '', map { "\\$_" } split '',
-        '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼';
+        '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼─－―';
     our $matchre1 = qr/([^\x20-\x7e$matchre])/;
 #    our $te = "sjis";
 }
@@ -62,7 +62,22 @@ sub main {
             $outbuf .= q(\par\vspace{8mm}).$/;
         }
         for my $item (@{$content{p}}) {
-            $outbuf .= output( $te, $item->as_text );
+            if ( ( defined $item->attr('class') )
+                     and $item->attr('class') eq 'poem' ) {
+                $outbuf .= q{\begin{verse}}.$/;
+                my @things = $item->content_list;
+                my $th;
+                for $th (@things) {
+                    if (ref($th) eq "HTML::Element") {
+                        $outbuf .= "\\\\$/";
+                    } else {
+                        $outbuf .= output( $th );
+                    }
+                }
+                $outbuf .= q{\end{verse}}.$/;
+            } else {
+                $outbuf .= output( $item->as_text );
+            }
             $outbuf .= "$/$/";
         }
         #        print $tag, ":", map { defined $_ && ref $_ eq 'HASH' && $_->as_text } @{$content{$tag}}, $/;
@@ -90,13 +105,16 @@ sub encode_chinese {
 }
 
 sub output {
-    my $te = shift;
     my $plain_text = shift;
 
     my $ret1 = encode_chinese($plain_text);
-    $ret1 =~ s/——/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
+    $ret1 =~ s/(?:——|――|－－|──|──)/\\――{}/g;      # tricky: use 0x2015 for euc-jp conversion
     $ret1 =~ s/～/〜/g;          # tricky: use WAVE DASH
     $ret1 =~ s/！！！/\\rensuji{!!!}/g;
+    $ret1 =~ s/！！/\\rensuji{!!}/g;
+    $ret1 =~ s/？！/\\rensuji{?!}/g;
+    $ret1 =~ s/！？/\\rensuji{!?}/g;
+    $ret1 =~ s/？？/\\rensuji{??}/g;
     return $ret1;
 }
 
