@@ -7,7 +7,7 @@
 %
 \newif\if@waku \@wakutrue
 \def\aozora@title@style{plain}
-\def\aozora@dviware{dvipdfm}
+\def\aozora@dviware{dvipdfmx}
 \def\kindle@type{kindle2}
 \def\base@size{normal}
 \define@key{aozora}{title}[plain]{\def\aozora@title@style{#1}}
@@ -36,9 +36,9 @@
 \AtEndOfPackage{%
 	\let\@unprocessedoptions\relax
 }
-%graphic package$B$NFI$_9~$_(B
+%graphic package$A$N$BFI$A$_$B9~$A$_(B
 \RequirePackage[\aozora@dviware]{graphicx}
-%$B?7$7$$C10L$N@_Dj(B
+%$APB$7$$$(I+J$AN;$N$(G]C$A6((B
 \newlength{\JQ}
 \setlength{\JQ}{0.259817mm}
 %
@@ -251,7 +251,8 @@
 \def\subtitle#1{\gdef\@subtitle{#1}}
 \def\subauthor#1{\gdef\@subauthor{#1}}
 \def\biblioname{$B@D6uJ88K(B}
-\def\azbanner{\hbox{\yoko\includegraphics[height= 1.5cm]{azlogo.eps}}\hspace*{50Q}}
+%\def\azbanner{\hbox{\yoko\includegraphics[height= 1.5cm]{azlogo.eps}}\hspace*{50Q}}
+\def\azbanner{\hbox{\yoko\includegraphics[height= 1.5cm]{logo.png}}\hspace*{50Q}}
 \renewcommand{\maketitle}{
 	\cleardoublepage
 	\if@twocolumn
@@ -272,7 +273,7 @@
 	\endgroup
 	\clearpage
 	\thispagestyle{empty}
-%	\az@title@back
+	\az@title@back
 	\if@restonecol\twocolumn \else \newpage \fi
 	\clearpage
 	\setcounter{footnote}{0}%
