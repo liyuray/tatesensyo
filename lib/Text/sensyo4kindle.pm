@@ -47,38 +47,56 @@ sub main {
         my $tree = HTML::TreeBuilder->new; # empty tree
         open my $fh, "<:utf8", $file or die $!;
         $tree->parse_file($fh);
+#        binmode STDOUT. ':utf8';
+#        binmode STDERR. ':utf8';
 #        $tree->dump;
 #        exit 1;
         my %content = map {
             $_ => [$tree->look_down( '_tag' , $_ )];
-        } qw(title h1 h2 p);
+        } qw(title body);
         if ($content{title}[0]->as_text and $file =~/Section\d+/) {
             $outbuf .= "\\subtitle{".encode_chinese( $content{title}[0]->as_text )."}".$/;
         }
-        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
-            $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\large ".encode_chinese( $content{h1}[0]->as_text )."}$/";
-            $outbuf .= q(\end{jisage}).$/.$/;
-            $outbuf .= q(\par\vspace{8mm}).$/;
-        }
-        for my $item (@{$content{p}}) {
-            if ( ( defined $item->attr('class') )
-                     and $item->attr('class') eq 'poem' ) {
-                $outbuf .= q{\begin{verse}}.$/;
-                my @things = $item->content_list;
-                my $th;
-                for $th (@things) {
-                    if (ref($th) eq "HTML::Element") {
-                        $outbuf .= "\\\\$/";
-                    } else {
-                        $outbuf .= output( $th );
-                    }
-                }
-                $outbuf .= q{\end{verse}}.$/;
-            } else {
-                $outbuf .= output( $item->as_text );
+        #        $content{body}[0]->dump;
+        #        do {$_->dump;print "##$/"} for ($content{body}[0]->content_list);
+        #        print "---$/";
+        #        next;
+        for my $entry ($content{body}[0]->content_list) {
+#        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
+            if ($entry->tag eq 'h1') {
+                $outbuf .= q(\begin{jisage}{0}).$/;
+                $outbuf .= "{\\Large ".encode_chinese( $entry->as_text )."}$/";
+                $outbuf .= q(\end{jisage}).$/;
+                $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
             }
-            $outbuf .= "$/$/";
+            #        if (defined $content{h2}[0] and $content{h2}[0]->as_text) {
+            if ($entry->tag eq 'h2') {
+                $outbuf .= q(\newpage).$/;
+                $outbuf .= q(\begin{jisage}{0}).$/;
+                $outbuf .= "{\\large ".encode_chinese( $entry->as_text )."}$/";
+                $outbuf .= q(\end{jisage}).$/;
+                $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+            }
+            #        for my $item (@{$content{p}}) {
+            if ($entry->tag eq 'p') {
+                if ( ( defined $entry->attr('class') )
+                         and $entry->attr('class') eq 'poem' ) {
+                    #                $outbuf .= q{\begin{verse}}.$/;
+                    my @things = $entry->content_list;
+                    my $th;
+                    for $th (@things) {
+                        if (ref($th) eq "HTML::Element") {
+                            $outbuf .= "$/$/";
+                        } else {
+                            $outbuf .= output( $th );
+                        }
+                    }
+                #                $outbuf .= q{\end{verse}}.$/;
+                } else {
+                    $outbuf .= output( $entry->as_text );
+                }
+                $outbuf .= "$/$/";
+            }
         }
         #        print $tag, ":", map { defined $_ && ref $_ eq 'HASH' && $_->as_text } @{$content{$tag}}, $/;
         $outbuf .= '\clearpage'.$/.$/;
@@ -115,6 +133,7 @@ sub output {
     $ret1 =~ s/？！/\\rensuji{?!}/g;
     $ret1 =~ s/！？/\\rensuji{!?}/g;
     $ret1 =~ s/？？/\\rensuji{??}/g;
+    $ret1 =~ s/([？！])/$1\\</g; # prevent redundant space after !?
     return $ret1;
 }
 
@@ -152,7 +171,7 @@ TEX1
 \date{}
 \begin{document}
 \maketitle
-\setlength{\parindent}{2em}
+\setlength{\parindent}{2zw}
 TEX2
     return encode($te,$tex.$tex1.$tex2);
 }
