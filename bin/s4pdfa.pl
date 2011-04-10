@@ -26,7 +26,9 @@ my %tc = (
 
 my $root = $FindBin::RealBin.'/..';
 
-$ENV{PATH} = '/Applications/pTeX.app/teTeX/bin:/usr/local/bin:'.$ENV{PATH} if $^O eq 'darwin';
+#$ENV{PATH} = '/Applications/pTeX.app/teTeX/bin:/usr/local/bin:'.$ENV{PATH} if $^O eq 'darwin';
+$ENV{PATH} = '/Users/liyuray/texlive/2010/bin/x86_64-darwin:/usr/local/bin:'.$ENV{PATH} if $^O eq 'darwin';
+#$ENV{TEXMFMAIN} = '/Users/liyuray/texlive/2010/texmf' if $^O eq 'darwin';
 
 my $tempdir;
 for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
@@ -40,14 +42,15 @@ for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
     my ($title, $author) =Text::sensyo4kindle::main($epubdir, $texfile, $te);
     $ENV{TEXINPUTS} = ".:$root:$root/texmf/tex//:";
     $ENV{TEXFONTS} =  ".:$root/texmf/fonts//:";
-    @cmd = ("platex", "-kanji=".$tc{$te}, "-output-directory", "$tempdir/log", $texfile);
+    @cmd = ("platex", "-kanji=".$tc{$te}, "-shell-escape", "-output-directory", "$tempdir/log", $texfile);
     runcmd(\@cmd, 'platex1');
     #runcmd(\@cmd, 'platex2');
 
     $ENV{TEXFONTS} =  "/usr/share/fonts/truetype//:/usr/share/fonts/opentype//:$root/texmf/fonts//:";
     $ENV{CMAPINPUTS} = do {
         if ($^O eq 'darwin') {
-            "$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+#            "$root/texmf/CMap:/Applications/pTeX.app/teTeX/share/texmf/fonts/cmap/CMap:";
+#            "$root/texmf/CMap:/Users/liyuray/texlive/2010/texmf/fonts/cmap/dvipdfmx:"
         } else {
             "/usr/share/ghostscript/8.71/Resource/CMap:"
         }
