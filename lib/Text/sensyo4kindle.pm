@@ -62,6 +62,10 @@ sub main {
         #        print "---$/";
         #        next;
         for my $entry ($content{body}[0]->content_list) {
+            if ($file =~ /Cover/ and $entry->tag eq 'div') {
+                #                $outbuf .= q(\hyperimage{)."$dir/OEBPS/Images/Cover.png}$/";
+                $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90,height=\textheight]{)."$dir/OEBPS/Images/Cover.png}$/";
+            }
 #        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
             if ($entry->tag eq 'h1') {
                 $outbuf .= q(\begin{jisage}{0}).$/;
