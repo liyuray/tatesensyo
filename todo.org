@@ -11,7 +11,7 @@
 
 * Write test cases for punctuation.
 * Keep ePub files on aws.
-* Read the Tex book.
+* TODO Read the Tex book.
 * Commercial novels are in vertical.
 * The puncts in commercial books are in center.
 * The wucongmin ecconomics book in Tex has low puncts.
@@ -20,7 +20,10 @@
 * Ipam's are correct in Japanese sense.
 * DONE Use Japanese sense first.
 * TODO Write google page
-* TODO Apply google ad sense.
-* TODO check appropriate subtitle.
-* TODO refactor like takahashim's aozora4reader.rb.
-* TODO 
+* DONE Apply google ad sense.
+* DONE check appropriate subtitle.
+* DONE refactor like takahashim's aozora4reader.rb.
+* already read okumura sensei's latex book.
+* studied HTML::Element.
+* changed to the utf-8 encoding and texlive distribution.
+
