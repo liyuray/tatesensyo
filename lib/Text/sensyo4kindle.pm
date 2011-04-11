@@ -11,6 +11,7 @@ BEGIN {
 use strict;
 use warnings;
 use Encode;
+use Data::Dumper;
 use utf8;
 
 =head1 NAME
@@ -32,11 +33,13 @@ sub main {
     my $te = shift;
 
     my $ref = XMLin("$dir/OEBPS/content.opf");
-
+#    print Dumper($ref->{metadata});
+#    exit;
     my $title = $ref->{metadata}{'dc:title'};
     my $author = ref($ref->{metadata}{'dc:creator'}) eq 'HASH'
         ? $ref->{metadata}{'dc:creator'}{content}
             : $ref->{metadata}{'dc:creator'};
+    my $cover = $ref->{metadata}{meta}{cover}{content} if exists $ref->{metadata}{meta}{cover};
     my @content_files = map { "$dir/OEBPS/".$ref->{manifest}{item}{$_->{idref}}{href} } @{$ref->{spine}{itemref}};
 
 #    print @content_files;
@@ -62,9 +65,9 @@ sub main {
         #        print "---$/";
         #        next;
         for my $entry ($content{body}[0]->content_list) {
-            if ($file =~ /Cover/ and $entry->tag eq 'div') {
+            if ($file =~ /Cover/i and $entry->tag eq 'div' and $cover) {
                 #                $outbuf .= q(\hyperimage{)."$dir/OEBPS/Images/Cover.png}$/";
-                $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90,height=\textheight]{)."$dir/OEBPS/Images/Cover.png}$/";
+                $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90,height=\textheight]{)."$dir/OEBPS/".$ref->{manifest}{item}{$cover}{href}."}$/";
             }
 #        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
             if ($entry->tag eq 'h1') {
