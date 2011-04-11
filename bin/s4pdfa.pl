@@ -17,7 +17,7 @@ die "no epub file specified!" if scalar @ARGV < 1;
 
 my $verbose;
 my $result = GetOptions ( "verbose" => \$verbose );
-my $te = 'euc-jp';
+my $te = 'utf8';
 my %tc = (
     'sjis' => 'sjis',
     'euc-jp' => 'euc',
@@ -26,9 +26,8 @@ my %tc = (
 
 my $root = $FindBin::RealBin.'/..';
 
-#$ENV{PATH} = '/Applications/pTeX.app/teTeX/bin:/usr/local/bin:'.$ENV{PATH} if $^O eq 'darwin';
 $ENV{PATH} = '/Users/liyuray/texlive/2010/bin/x86_64-darwin:/usr/local/bin:'.$ENV{PATH} if $^O eq 'darwin';
-#$ENV{TEXMFMAIN} = '/Users/liyuray/texlive/2010/texmf' if $^O eq 'darwin';
+$ENV{PATH} = '/home/yj/e/texlive/bin/x86_64-linux:'.$ENV{PATH} if $^O eq 'linux';
 
 my $tempdir;
 for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
