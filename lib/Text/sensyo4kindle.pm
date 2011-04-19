@@ -100,6 +100,18 @@ sub main {
                     }
                 #                $outbuf .= q{\end{verse}}.$/;
                 } else {
+                    my @things = $entry->content_list;
+                    my $isimg;
+                    for my $th (@things) {
+                        last unless $th and ref($th) eq "HTML::Element";
+                        if ($th->tag eq 'img') {
+                            my $imgsrc = $th->attr('src');
+                            $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90]{)."$dir/OEBPS/$imgsrc}$/";
+                            $isimg = 1;
+                        } else {
+                            $outbuf .= output( $th->as_text );
+                        }
+                    }
                     $outbuf .= output( $entry->as_text );
                 }
                 $outbuf .= "$/$/";
@@ -141,6 +153,11 @@ sub output {
     $ret1 =~ s/！？/\\rensuji{!?}/g;
     $ret1 =~ s/？？/\\rensuji{??}/g;
     $ret1 =~ s/([？！])/$1\\</g; # prevent redundant space after !?
+    $ret1 =~ s/\&hellip\;/……/g;
+    $ret1 =~ s/\&/\\\&/g;
+    $ret1 =~ s/\［/\〔/g;
+    $ret1 =~ s/\］/\〕/g;
+    $ret1 =~ s/(\d{1,2})\./\\rensuji{$1\.}/g;
     return $ret1;
 }
 
@@ -177,6 +194,7 @@ TEX1
     my $tex2 = << 'TEX2';
 \date{}
 \begin{document}
+%\DeclareGraphicsRule{JPG}{jpg}{*}{}
 \maketitle
 \setlength{\parindent}{2zw}
 TEX2
