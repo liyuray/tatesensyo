@@ -7,10 +7,10 @@ gbmv           V                   ipag.ttf
 %%% OTF package
 hminr-h        H                   ipam.ttf
 hminr-v        V                   ipam.ttf
-otf-ujmr-h     UniJIS-UTF16-H      ipam.ttf
-otf-ujmr-v     UniJIS-UTF16-V      ipam.ttf
-otf-cjmr-h     Adobe-Japan1-6      ipam.ttf
-otf-cjmr-v     Identity-V          ipam.ttf/AJ16
+otf-ujmr-h     UniJIS-UTF16-H      hiraginom.otf
+otf-ujmr-v     UniJIS-UTF16-V      hiraginom.otf
+otf-cjmr-h     Adobe-Japan1-6      hiraginom.otf
+otf-cjmr-v     Identity-V          hiraginom.otf/AJ16
 
 hgothr-h       H                   ipag.ttf
 hgothr-v       V                   ipag.ttf

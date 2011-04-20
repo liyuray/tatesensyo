@@ -41,7 +41,14 @@ for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
     my ($title, $author) =Text::sensyo4kindle::main($epubdir, $texfile, $te);
     $ENV{TEXINPUTS} = ".:$root:$root/texmf/tex//:";
     $ENV{TEXFONTS} =  ".:$root/texmf/fonts//:";
-    @cmd = ("platex", "-kanji=".$tc{$te}, "-shell-escape", "-output-directory", "$tempdir/log", $texfile);
+    @cmd = ("platex",
+            "-kanji=".$tc{$te},
+            "-shell-escape",
+            "-output-directory",
+            "$tempdir/log",
+            q(\\nonstopmode\\input),
+            $texfile,
+        );
     runcmd(\@cmd, 'platex1');
     #runcmd(\@cmd, 'platex2');
 

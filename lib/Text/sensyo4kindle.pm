@@ -4,7 +4,7 @@ BEGIN {
     require 5.006_000;
     use utf8;
     our $matchre = join '', map { "\\$_" } split '',
-        '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼─－―';
+        '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼─－―⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛';
     our $matchre1 = qr/([^\x20-\x7e$matchre])/;
 #    our $te = "sjis";
 }
@@ -106,7 +106,7 @@ sub main {
                         last unless $th and ref($th) eq "HTML::Element";
                         if ($th->tag eq 'img') {
                             my $imgsrc = $th->attr('src');
-                            $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90]{)."$dir/OEBPS/$imgsrc}$/";
+#                            $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90]{)."$dir/OEBPS/$imgsrc}$/";
                             $isimg = 1;
                         } else {
                             $outbuf .= output( $th->as_text );
@@ -157,7 +157,11 @@ sub output {
     $ret1 =~ s/\&/\\\&/g;
     $ret1 =~ s/\［/\〔/g;
     $ret1 =~ s/\］/\〕/g;
-    $ret1 =~ s/(\d{1,2})\./\\rensuji{$1\.}/g;
+#    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
+    $ret1 =~ s/\b(\d)\.([^\d])/\\ajPeriod{$1}$2/g; #between 1 and 20 ⒈=0x2488, １=0xff11
+    $ret1 =~ s/\b(\d\d)\.([^\d])/\\rensuji{$1\.}$2/g;
+#    $ret1 =~ s/\b(\d\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
+#    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\rensuji{\\UTF{%X}.}", $1 - 1 + ord('１')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
     return $ret1;
 }
 

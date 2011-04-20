@@ -26,4 +26,6 @@
 * already read okumura sensei's latex book.
 * studied HTML::Element.
 * changed to the utf-8 encoding and texlive distribution.
-
+* check how to type ⒈=0x2488.
+** TODO use \rensuji and \kern?
+** TODO use hiragino font?
