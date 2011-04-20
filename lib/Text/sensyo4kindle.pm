@@ -158,10 +158,10 @@ sub output {
     $ret1 =~ s/\［/\〔/g;
     $ret1 =~ s/\］/\〕/g;
 #    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
-    $ret1 =~ s/\b(\d)\.([^\d])/\\ajPeriod{$1}$2/g; #between 1 and 20 ⒈=0x2488, １=0xff11
-    $ret1 =~ s/\b(\d\d)\.([^\d])/\\rensuji{$1\.}$2/g;
 #    $ret1 =~ s/\b(\d\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
-#    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\rensuji{\\UTF{%X}.}", $1 - 1 + ord('１')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
+    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\rensuji{\\UTF{%X}\\kern-.3zw .}", $1 - 1 + ord('１')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
+#    $ret1 =~ s/\b(\d)\.([^\d])/\\ajPeriod{$1}$2/g; #between 1 and 20 ⒈=0x2488, １=0xff11
+    $ret1 =~ s/\b(\d\d)\.([^\d])/\\rensuji{$1\\kern-.1zw \.}$2/g;
     return $ret1;
 }
 
@@ -176,6 +176,7 @@ sub gen_tex {
 \documentclass[a5paper]{tbook}
 \usepackage[noreplace, multi]{otf}
 \usepackage[device=kindle2,size=large]{sensyo}
+\usepackage{times}
 \usepackage{atbegshi}
 %% Bookmarkの文字化け対策（日本語向け）
 \ifnum 46273=\euc"B4C1 % 46273 == 0xB4C1 == 漢(EUC-JP)
