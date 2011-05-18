@@ -4,7 +4,7 @@ BEGIN {
     require 5.006_000;
     use utf8;
     our $matchre = join '', map { "\\$_" } split '',
-        '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼─－―⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛';
+        '｀…‥’“”〔〕〈〉《》「」『』【】‘’−、。・ー！＃＄％＆（）＋，．：；＝？［］｛｝—～∼─－―⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛　';
     our $matchre1 = qr/([^\x20-\x7e$matchre])/;
 #    our $te = "sjis";
 }
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 use Encode;
 use Data::Dumper;
+use File::Basename;
 use utf8;
 
 =head1 NAME
@@ -32,26 +33,27 @@ sub main {
     my $texfile = shift;
     my $te = shift;
 
-    my $ref = XMLin("$dir/OEBPS/content.opf");
-#    print Dumper($ref->{metadata});
-#    exit;
-    my $title = $ref->{metadata}{'dc:title'};
+    my $ref1 = XMLin("$dir/META-INF/container.xml");
+    my $opf_file = $ref1->{rootfiles}{rootfile}{'full-path'};
+    my $dirname = dirname("$dir/$opf_file");
+    my $ref = XMLin("$dir/$opf_file");
+    my $title = ref($ref->{metadata}{'dc:title'}) eq 'HASH'
+        ? $ref->{metadata}{'dc:title'}{content}
+            : $ref->{metadata}{'dc:title'};
     my $author = ref($ref->{metadata}{'dc:creator'}) eq 'HASH'
         ? $ref->{metadata}{'dc:creator'}{content}
             : $ref->{metadata}{'dc:creator'};
     my $cover = $ref->{metadata}{meta}{cover}{content} if exists $ref->{metadata}{meta}{cover};
-    my @content_files = map { "$dir/OEBPS/".$ref->{manifest}{item}{$_->{idref}}{href} } @{$ref->{spine}{itemref}};
+    my @content_files = map { "$dirname/".$ref->{manifest}{item}{$_->{idref}}{href} } @{$ref->{spine}{itemref}};
 
-#    print @content_files;
-#    exit 1;
     my $outbuf = "";
     for my $file (@content_files) {
 #        print $file,$/;
         my $tree = HTML::TreeBuilder->new; # empty tree
         open my $fh, "<:utf8", $file or die $!;
         $tree->parse_file($fh);
-#        binmode STDOUT. ':utf8';
-#        binmode STDERR. ':utf8';
+#        binmode STDOUT, ':utf8';
+#        binmode STDERR, ':utf8';
 #        $tree->dump;
 #        exit 1;
         my %content = map {
@@ -69,23 +71,22 @@ sub main {
                 #                $outbuf .= q(\hyperimage{)."$dir/OEBPS/Images/Cover.png}$/";
                 $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90,height=\textheight]{)."$dir/OEBPS/".$ref->{manifest}{item}{$cover}{href}."}$/";
             }
-#        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
-            if ($entry->tag eq 'h1') {
+            #        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
+            if (ref $entry ne 'HTML::Element') {
+#                print Dumper($entry);
+#                exit;
+            } elsif ($entry->tag eq 'h1') {
                 $outbuf .= q(\begin{jisage}{0}).$/;
                 $outbuf .= "{\\Large ".encode_chinese( $entry->as_text )."}$/";
                 $outbuf .= q(\end{jisage}).$/;
                 $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-            }
-            #        if (defined $content{h2}[0] and $content{h2}[0]->as_text) {
-            if ($entry->tag eq 'h2') {
+            } elsif ($entry->tag eq 'h2') {
                 $outbuf .= q(\newpage).$/;
                 $outbuf .= q(\begin{jisage}{0}).$/;
                 $outbuf .= "{\\large ".encode_chinese( $entry->as_text )."}$/";
                 $outbuf .= q(\end{jisage}).$/;
                 $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-            }
-            #        for my $item (@{$content{p}}) {
-            if ($entry->tag eq 'p') {
+            } elsif ($entry->tag eq 'p') {
                 if ( ( defined $entry->attr('class') )
                          and $entry->attr('class') eq 'poem' ) {
                     #                $outbuf .= q{\begin{verse}}.$/;
@@ -103,13 +104,24 @@ sub main {
                     my @things = $entry->content_list;
                     my $isimg;
                     for my $th (@things) {
-                        last unless $th and ref($th) eq "HTML::Element";
+                        next unless ref($th) eq "HTML::Element";
                         if ($th->tag eq 'img') {
                             my $imgsrc = $th->attr('src');
 #                            $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90]{)."$dir/OEBPS/$imgsrc}$/";
                             $isimg = 1;
+                        } elsif ($th->tag eq 'br') {
+#                            print "!!";$th->dump;
+#                            $outbuf .= "ggyy$/$/";
                         } else {
-                            $outbuf .= output( $th->as_text );
+#                            print "!!";$th->dump;
+                            if (ref(($th->content_list)[0]) eq 'HTML::Element') {
+                                if (($th->content_list)[0]->tag eq 'br') {
+#                                    $outbuf .= "ggyy";
+#                                    $outbuf .= "$/$/";
+                                }
+                            } else {
+                                $outbuf .= output( $th->as_text );
+                            }
                         }
                     }
                     $outbuf .= output( $entry->as_text );
@@ -157,6 +169,7 @@ sub output {
     $ret1 =~ s/\&/\\\&/g;
     $ret1 =~ s/\［/\〔/g;
     $ret1 =~ s/\］/\〕/g;
+    $ret1 =~ s/　　/\n\n/g;    # dirty
 #    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
 #    $ret1 =~ s/\b(\d\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
     $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\rensuji{\\UTF{%X}\\kern-.3zw .}", $1 - 1 + ord('１')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
