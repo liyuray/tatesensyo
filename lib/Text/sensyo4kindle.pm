@@ -28,6 +28,16 @@ version 0.0001
 use XML::Simple;
 use HTML::TreeBuilder;
 
+sub give_id {
+    my $x = $_[0];
+    my $l = $_[1];
+    print ' 'x$l,$x->tag,$/;
+    foreach my $c ($x->content_list) {
+        print(' ' x $l, $x->tag,"--", substr($c,0,20), $/) if not ref $c;;
+        give_id($c, $l+1) if ref $c; #ignore text notes
+    }
+}
+
 sub main {
     my $dir = shift;
     my $texfile = shift;
@@ -52,8 +62,11 @@ sub main {
         my $tree = HTML::TreeBuilder->new; # empty tree
         open my $fh, "<:utf8", $file or die $!;
         $tree->parse_file($fh);
-#        binmode STDOUT, ':utf8';
-#        binmode STDERR, ':utf8';
+        binmode STDOUT, ':utf8';
+        binmode STDERR, ':utf8';
+        give_id($tree, 0);
+        $tree->delete;
+        next;
 #        $tree->dump;
 #        exit 1;
         my %content = map {
