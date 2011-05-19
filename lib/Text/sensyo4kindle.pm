@@ -28,16 +28,7 @@ version 0.0001
 use XML::Simple;
 use HTML::TreeBuilder;
 
-sub give_id {
-    my $x = $_[0];
-    my $l = $_[1];
-    print ' 'x$l,$x->tag,$/;
-    foreach my $c ($x->content_list) {
-        print(' ' x $l, $x->tag,"--", substr($c,0,20), $/) if not ref $c;;
-        give_id($c, $l+1) if ref $c; #ignore text notes
-    }
-}
-
+my $outbuf = "";
 sub main {
     my $dir = shift;
     my $texfile = shift;
@@ -56,97 +47,30 @@ sub main {
     my $cover = $ref->{metadata}{meta}{cover}{content} if exists $ref->{metadata}{meta}{cover};
     my @content_files = map { "$dirname/".$ref->{manifest}{item}{$_->{idref}}{href} } @{$ref->{spine}{itemref}};
 
-    my $outbuf = "";
+    binmode STDOUT, ':utf8';
+    binmode STDERR, ':utf8';
     for my $file (@content_files) {
 #        print $file,$/;
         my $tree = HTML::TreeBuilder->new; # empty tree
         open my $fh, "<:utf8", $file or die $!;
         $tree->parse_file($fh);
-        binmode STDOUT, ':utf8';
-        binmode STDERR, ':utf8';
-        give_id($tree, 0);
-        $tree->delete;
-        next;
 #        $tree->dump;
 #        exit 1;
-        my %content = map {
-            $_ => [$tree->look_down( '_tag' , $_ )];
-        } qw(title body);
-        if ($content{title}[0]->as_text and $file =~/Section\d+/) {
-            $outbuf .= "\\subtitle{".encode_chinese( $content{title}[0]->as_text )."}".$/;
-        }
-        #        $content{body}[0]->dump;
-        #        do {$_->dump;print "##$/"} for ($content{body}[0]->content_list);
-        #        print "---$/";
-        #        next;
-        for my $entry ($content{body}[0]->content_list) {
-            if ($file =~ /Cover/i and $entry->tag eq 'div' and $cover) {
-                #                $outbuf .= q(\hyperimage{)."$dir/OEBPS/Images/Cover.png}$/";
-                $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90,height=\textheight]{)."$dir/OEBPS/".$ref->{manifest}{item}{$cover}{href}."}$/";
-            }
-            #        if (defined $content{h1}[0] and $content{h1}[0]->as_text) {
-            if (ref $entry ne 'HTML::Element') {
-#                print Dumper($entry);
-#                exit;
-            } elsif ($entry->tag eq 'h1') {
-                $outbuf .= q(\begin{jisage}{0}).$/;
-                $outbuf .= "{\\Large ".encode_chinese( $entry->as_text )."}$/";
-                $outbuf .= q(\end{jisage}).$/;
-                $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-            } elsif ($entry->tag eq 'h2') {
-                $outbuf .= q(\newpage).$/;
-                $outbuf .= q(\begin{jisage}{0}).$/;
-                $outbuf .= "{\\large ".encode_chinese( $entry->as_text )."}$/";
-                $outbuf .= q(\end{jisage}).$/;
-                $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-            } elsif ($entry->tag eq 'p') {
-                if ( ( defined $entry->attr('class') )
-                         and $entry->attr('class') eq 'poem' ) {
-                    #                $outbuf .= q{\begin{verse}}.$/;
-                    my @things = $entry->content_list;
-                    my $th;
-                    for $th (@things) {
-                        if (ref($th) eq "HTML::Element") {
-                            $outbuf .= "$/$/";
-                        } else {
-                            $outbuf .= output( $th );
-                        }
-                    }
-                #                $outbuf .= q{\end{verse}}.$/;
-                } else {
-                    my @things = $entry->content_list;
-                    my $isimg;
-                    for my $th (@things) {
-                        next unless ref($th) eq "HTML::Element";
-                        if ($th->tag eq 'img') {
-                            my $imgsrc = $th->attr('src');
-#                            $outbuf .= q(\thispagestyle{empty}).$/.q(\includegraphics[angle=90]{)."$dir/OEBPS/$imgsrc}$/";
-                            $isimg = 1;
-                        } elsif ($th->tag eq 'br') {
-#                            print "!!";$th->dump;
-#                            $outbuf .= "ggyy$/$/";
-                        } else {
-#                            print "!!";$th->dump;
-                            if (ref(($th->content_list)[0]) eq 'HTML::Element') {
-                                if (($th->content_list)[0]->tag eq 'br') {
-#                                    $outbuf .= "ggyy";
-#                                    $outbuf .= "$/$/";
-                                }
-                            } else {
-                                $outbuf .= output( $th->as_text );
-                            }
-                        }
-                    }
-                    $outbuf .= output( $entry->as_text );
-                }
-                $outbuf .= "$/$/";
+        my ($head, $body) = map {
+            $tree->look_down( '_tag' , $_ )
+        } qw(head body);
+
+        my $title = $head->look_down( '_tag', 'title' );
+        if ($title) {
+            my $titlestring = $title->as_text;
+            if ($titlestring and $file =~/Section\d+/) {
+                $outbuf .= "\\subtitle{".encode_chinese( $titlestring )."}".$/;
             }
         }
-        #        print $tag, ":", map { defined $_ && ref $_ eq 'HASH' && $_->as_text } @{$content{$tag}}, $/;
+        process_body($body);
         $outbuf .= '\clearpage'.$/.$/;
         $tree = $tree->delete;
     }
-
     my $fho;
     open $fho, ">:raw", $texfile or die "$!";
     print $fho gen_tex(
@@ -158,6 +82,43 @@ sub main {
     print $fho '\end{document}',$/;
     close $fho;
     return $title, $author;
+}
+
+sub process_node {
+    my $x = $_[0];
+    my $l = $_[1];
+    
+#    print ' 'x$l,$x->tag,$/;
+    if ($x->tag eq 'h1') {
+        $outbuf .= q(\begin{jisage}{0}).$/;
+        $outbuf .= "{\\Large ".encode_chinese( $x->as_text )."}$/";
+        $outbuf .= q(\end{jisage}).$/;
+        $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+    } elsif ($x->tag eq 'h2') {
+        $outbuf .= q(\newpage).$/;
+        $outbuf .= q(\begin{jisage}{0}).$/;
+        $outbuf .= "{\\large ".encode_chinese( $x->as_text )."}$/";
+        $outbuf .= q(\end{jisage}).$/;
+        $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+    } elsif ($x->tag eq 'p') {
+        foreach my $c ($x->content_list) {
+            print(' ' x $l, $x->tag,"+-", substr($c,0,20), $/) if not ref $c;;
+            $outbuf .= output( $c ).$/.$/ if not ref $c;
+            process_node($c, $l+1) if ref $c; #ignore text notes
+        }
+    } else {
+        foreach my $c ($x->content_list) {
+            print(' ' x $l, $x->tag,"--", substr($c,0,20), $/) if not ref $c;;
+#            $outbuf .= output( $c ).$/.$/ if not ref $c;
+            process_node($c, $l+1) if ref $c; #ignore text notes
+        }            
+    }
+}
+
+sub process_body {
+    my $body = shift;
+
+    process_node($body, 0);
 }
 
 sub encode_chinese {
@@ -182,7 +143,7 @@ sub output {
     $ret1 =~ s/\&/\\\&/g;
     $ret1 =~ s/\［/\〔/g;
     $ret1 =~ s/\］/\〕/g;
-    $ret1 =~ s/　　/\n\n/g;    # dirty
+    $ret1 =~ s/　{2,}/ /g;    # dirty
 #    $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
 #    $ret1 =~ s/\b(\d\d)\.([^\d])/sprintf("\\UTF{%X}", $1 - 1 + ord('⒈')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
     $ret1 =~ s/\b(\d)\.([^\d])/sprintf("\\rensuji{\\UTF{%X}\\kern-.3zw .}", $1 - 1 + ord('１')).$2/ge; #between 1 and 20 ⒈=0x2488, １=0xff11
