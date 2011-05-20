@@ -63,6 +63,15 @@ for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
     };
     @cmd = ("dvipdfmx", "-vvvvv", "-f","$root/cid-x.map", "-o", "$title-$author.pdf", "$tempdir/log/a.dvi");
     runcmd(\@cmd, 'dvipdfmx');
+    open my $lfh, "<", "$tempdir/log/dvipdfmxerr.txt" or die $!;
+    my $dvipdfmxlog = do { local $/; <$lfh> };
+    close $lfh;
+    #    print $dvipdfmxlog;
+    my @out = ( $dvipdfmxlog =~ /input str: <(\w+?)>/g );
+#    my @out = map {/input str: <(\w+?)>/ && $1 } grep { /input str: </ } split /\n/, $dvipdfmxlog;
+    binmode STDOUT, ":utf8";
+    print "missing glyphs:$/";
+    print map {$_. ":".chr(hex($_)).$/} @out;
 }
 
 sub runcmd {
