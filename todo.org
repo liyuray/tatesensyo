@@ -29,3 +29,6 @@
 * check how to type ⒈=0x2488.
 ** TODO use \rensuji and \kern?
 ** TODO use hiragino font?
+
+* DONE output missing tag in html.
+* DONE output missing glyph in pdf.
