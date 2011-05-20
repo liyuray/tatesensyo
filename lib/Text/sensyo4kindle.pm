@@ -29,6 +29,7 @@ use XML::Simple;
 use HTML::TreeBuilder;
 
 my $outbuf = "";
+my $file;
 sub main {
     my $dir = shift;
     my $texfile = shift;
@@ -49,7 +50,8 @@ sub main {
 
     binmode STDOUT, ':utf8';
     binmode STDERR, ':utf8';
-    for my $file (@content_files) {
+    print "ignored tags--text:$/";
+    for $file (@content_files) {
 #        print $file,$/;
         my $tree = HTML::TreeBuilder->new; # empty tree
         open my $fh, "<:utf8", $file or die $!;
@@ -67,7 +69,7 @@ sub main {
                 $outbuf .= "\\subtitle{".encode_chinese( $titlestring )."}".$/;
             }
         }
-        process_body($body);
+        process_node($body, 0, basename $file);
         $outbuf .= '\clearpage'.$/.$/;
         $tree = $tree->delete;
     }
@@ -87,6 +89,7 @@ sub main {
 sub process_node {
     my $x = $_[0];
     my $l = $_[1];
+    my $t = $_[2];
     
 #    print ' 'x$l,$x->tag,$/;
     if ($x->tag eq 'h1') {
@@ -100,25 +103,27 @@ sub process_node {
         $outbuf .= "{\\large ".encode_chinese( $x->as_text )."}$/";
         $outbuf .= q(\end{jisage}).$/;
         $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+    } elsif ($x->tag eq 'h3') {
+        $outbuf .= q(\newpage).$/;
+        $outbuf .= q(\begin{jisage}{0}).$/;
+        $outbuf .= "{\\large ".encode_chinese( $x->as_text )."}$/";
+        $outbuf .= q(\end{jisage}).$/;
+        $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
     } elsif ($x->tag eq 'p') {
         foreach my $c ($x->content_list) {
-            print(' ' x $l, $x->tag,"+-", substr($c,0,20), $/) if not ref $c;;
+#            print(' ' x $l, $x->tag,"+-", substr($c,0,20), $/) if not ref $c;;
             $outbuf .= output( $c ).$/.$/ if not ref $c;
-            process_node($c, $l+1) if ref $c; #ignore text notes
+            process_node($c, $l+1, $t.'.'.$c->tag) if ref $c; #ignore text notes
         }
     } else {
         foreach my $c ($x->content_list) {
-            print(' ' x $l, $x->tag,"--", substr($c,0,20), $/) if not ref $c;;
+            print(
+#                ' ' x $l,
+                $t, "--", substr($c,0,20), $/) if not ref $c and $c;
 #            $outbuf .= output( $c ).$/.$/ if not ref $c;
-            process_node($c, $l+1) if ref $c; #ignore text notes
+            process_node($c, $l+1, $t.'.'.$c->tag) if ref $c; #ignore text notes
         }            
     }
-}
-
-sub process_body {
-    my $body = shift;
-
-    process_node($body, 0);
 }
 
 sub encode_chinese {
