@@ -35,6 +35,7 @@ sub main {
     my $texfile = shift;
     my $te = shift;
 
+    $outbuf = "";
     my $ref1 = XMLin("$dir/META-INF/container.xml");
     my $opf_file = $ref1->{rootfiles}{rootfile}{'full-path'};
     my $dirname = dirname("$dir/$opf_file");
@@ -91,11 +92,18 @@ sub process_node {
     my $l = $_[1];
     my $t = $_[2];
     
+    if ($x->tag eq 'ol') {
+        $outbuf .= q(\setlength{\parindent}{0zw}).$/.q(\begin{enumerate}{\leftmargin=1zw}).$/;
+    } elsif ($x->tag eq 'ul') {
+        $outbuf .= q(\setlength{\parindent}{0zw}).$/.q(\begin{itemize}{\leftmargin=1zw}).$/;
+    } elsif ($x->tag eq 'br') {
+        $outbuf .= q(\newline);
+    }
     foreach my $c ($x->content_list) {
         if (ref $c) {
             process_node($c, $l+1, $t.'.'.$c->tag) ;
         } elsif ($x->tag eq 'p') {
-            $outbuf .= output( $c ).$/.$/;
+            $outbuf .= output( $c );
         } elsif ($x->tag eq 'h1') {
             $outbuf .= q(\begin{jisage}{0}).$/;
             $outbuf .= "{\\Large ".encode_chinese( $c )."}$/";
@@ -113,11 +121,26 @@ sub process_node {
             $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
             $outbuf .= q(\end{jisage}).$/;
             $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+        } elsif ($x->tag eq 'h4') {
+            $outbuf .= q(\newpage).$/;
+            $outbuf .= q(\begin{jisage}{0}).$/;
+            $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
+            $outbuf .= q(\end{jisage}).$/;
+            $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+        } elsif ($x->tag eq 'li') {
+            $outbuf .= q({\setlength\itemindent{1zw} \item ).output($c).q(}).$/;
         } elsif ($c) {          #ignore text notes
             print(
 #                ' ' x $l,
                 $t, "--", substr($c,0,20), $/);
         }
+    }
+    if ($x->tag eq 'ol') {
+        $outbuf .= q(\setlength{\parindent}{2zw}).$/.q(\end{enumerate}).$/;
+    } elsif ($x->tag eq 'ul') {
+        $outbuf .= q(\setlength{\parindent}{2zw}).$/.q(\end{itemize}).$/;
+    } elsif ($x->tag eq 'p') {
+        $outbuf .= $/.$/;
     }
 }
 
