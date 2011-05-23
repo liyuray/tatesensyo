@@ -97,12 +97,17 @@ sub process_node {
     } elsif ($x->tag eq 'ul') {
         $outbuf .= q(\setlength{\parindent}{0zw}).$/.q(\begin{itemize}{\leftmargin=1zw}).$/;
     } elsif ($x->tag eq 'br') {
-        $outbuf .= q(\newline);
+#        print $t,$/;
+#        $outbuf .= q(\newline).$/;
+        $outbuf .= $/;
     }
     foreach my $c ($x->content_list) {
         if (ref $c) {
             process_node($c, $l+1, $t.'.'.$c->tag) ;
         } elsif ($x->tag eq 'p') {
+            $outbuf .= output( $c );
+        } elsif ($x->tag eq 'div') {
+#            print $x->dump;
             $outbuf .= output( $c );
         } elsif ($x->tag eq 'h1') {
             $outbuf .= q(\begin{jisage}{0}).$/;
@@ -140,7 +145,7 @@ sub process_node {
     } elsif ($x->tag eq 'ul') {
         $outbuf .= q(\setlength{\parindent}{2zw}).$/.q(\end{itemize}).$/;
     } elsif ($x->tag eq 'p') {
-        $outbuf .= $/.$/;
+        $outbuf .= $/;
     }
 }
 
