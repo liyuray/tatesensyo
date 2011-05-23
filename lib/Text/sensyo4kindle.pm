@@ -91,38 +91,33 @@ sub process_node {
     my $l = $_[1];
     my $t = $_[2];
     
-#    print ' 'x$l,$x->tag,$/;
-    if ($x->tag eq 'h1') {
-        $outbuf .= q(\begin{jisage}{0}).$/;
-        $outbuf .= "{\\Large ".encode_chinese( $x->as_text )."}$/";
-        $outbuf .= q(\end{jisage}).$/;
-        $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-    } elsif ($x->tag eq 'h2') {
-        $outbuf .= q(\newpage).$/;
-        $outbuf .= q(\begin{jisage}{0}).$/;
-        $outbuf .= "{\\large ".encode_chinese( $x->as_text )."}$/";
-        $outbuf .= q(\end{jisage}).$/;
-        $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-    } elsif ($x->tag eq 'h3') {
-        $outbuf .= q(\newpage).$/;
-        $outbuf .= q(\begin{jisage}{0}).$/;
-        $outbuf .= "{\\large ".encode_chinese( $x->as_text )."}$/";
-        $outbuf .= q(\end{jisage}).$/;
-        $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
-    } elsif ($x->tag eq 'p') {
-        foreach my $c ($x->content_list) {
-#            print(' ' x $l, $x->tag,"+-", substr($c,0,20), $/) if not ref $c;;
-            $outbuf .= output( $c ).$/.$/ if not ref $c;
-            process_node($c, $l+1, $t.'.'.$c->tag) if ref $c; #ignore text notes
-        }
-    } else {
-        foreach my $c ($x->content_list) {
+    foreach my $c ($x->content_list) {
+        if (ref $c) {
+            process_node($c, $l+1, $t.'.'.$c->tag) ;
+        } elsif ($x->tag eq 'p') {
+            $outbuf .= output( $c ).$/.$/;
+        } elsif ($x->tag eq 'h1') {
+            $outbuf .= q(\begin{jisage}{0}).$/;
+            $outbuf .= "{\\Large ".encode_chinese( $c )."}$/";
+            $outbuf .= q(\end{jisage}).$/;
+            $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+        } elsif ($x->tag eq 'h2') {
+            $outbuf .= q(\newpage).$/;
+            $outbuf .= q(\begin{jisage}{0}).$/;
+            $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
+            $outbuf .= q(\end{jisage}).$/;
+            $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+        } elsif ($x->tag eq 'h3') {
+            $outbuf .= q(\newpage).$/;
+            $outbuf .= q(\begin{jisage}{0}).$/;
+            $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
+            $outbuf .= q(\end{jisage}).$/;
+            $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
+        } elsif ($c) {          #ignore text notes
             print(
 #                ' ' x $l,
-                $t, "--", substr($c,0,20), $/) if not ref $c and $c;
-#            $outbuf .= output( $c ).$/.$/ if not ref $c;
-            process_node($c, $l+1, $t.'.'.$c->tag) if ref $c; #ignore text notes
-        }            
+                $t, "--", substr($c,0,20), $/);
+        }
     }
 }
 
