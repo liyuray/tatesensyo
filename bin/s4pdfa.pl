@@ -67,11 +67,14 @@ for my $epubfile (map { decode 'utf8', $_ } @ARGV) {
     my $dvipdfmxlog = do { local $/; <$lfh> };
     close $lfh;
     #    print $dvipdfmxlog;
-    my @out = ( $dvipdfmxlog =~ /input str: <(\w+?)>/g );
-#    my @out = map {/input str: <(\w+?)>/ && $1 } grep { /input str: </ } split /\n/, $dvipdfmxlog;
+    my @out = ( $dvipdfmxlog =~ /input str: <([[:xdigit:]]+)>/g );
+    my @out1 =( $dvipdfmxlog =~ /Glyph missing in font.*?code=0x([[:xdigit:]]+)/g );
+    #    my @out = map {/input str: <(\w+?)>/ && $1 } grep { /input str: </ } split /\n/, $dvipdfmxlog;
     binmode STDOUT, ":utf8";
     print "missing glyphs:$/";
     print map {$_. ":".chr(hex($_)).$/} @out;
+    print "missing glyphs1:$/";
+    print map {$_. ":".chr(hex($_)).$/} @out1;
 }
 
 sub runcmd {
