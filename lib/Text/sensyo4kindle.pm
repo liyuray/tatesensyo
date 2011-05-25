@@ -91,7 +91,11 @@ sub process_node {
     my $x = $_[0];
     my $l = $_[1];
     my $t = $_[2];
-    
+
+    {
+        local $, = '","';
+        print $t, "!!", $x->all_external_attr(),$/ if $x->all_external_attr();
+    }
     if ($x->tag eq 'ol') {
         $outbuf .= q(\setlength{\parindent}{0zw}).$/.q(\begin{enumerate}{\leftmargin=1zw}).$/;
     } elsif ($x->tag eq 'ul') {
@@ -111,25 +115,25 @@ sub process_node {
             $outbuf .= output( $c );
         } elsif ($x->tag eq 'h1') {
             $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\Large ".encode_chinese( $c )."}$/";
+            $outbuf .= "{\\Large ".output( $c )."}$/";
             $outbuf .= q(\end{jisage}).$/;
             $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
         } elsif ($x->tag eq 'h2') {
             $outbuf .= q(\newpage).$/;
             $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
+            $outbuf .= "{\\large ".output( $c )."}$/";
             $outbuf .= q(\end{jisage}).$/;
             $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
         } elsif ($x->tag eq 'h3') {
             $outbuf .= q(\newpage).$/;
             $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
+            $outbuf .= "{\\large ".output( $c )."}$/";
             $outbuf .= q(\end{jisage}).$/;
             $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
         } elsif ($x->tag eq 'h4') {
             $outbuf .= q(\newpage).$/;
             $outbuf .= q(\begin{jisage}{0}).$/;
-            $outbuf .= "{\\large ".encode_chinese( $c )."}$/";
+            $outbuf .= "{\\large ".output( $c )."}$/";
             $outbuf .= q(\end{jisage}).$/;
             $outbuf .= q(\par\vspace{1\baselineskip}).$/; # one line space
         } elsif ($x->tag eq 'li') {
